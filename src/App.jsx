@@ -208,7 +208,7 @@ export default function App() {
                 <button onClick={() => setStep('intro')} className="p-1 -ml-1 text-gray-600 hover:text-black">
                   <ChevronLeft size={24} />
                 </button>
-                <h1 className="font-bold text-gray-800 hidden sm:block text-sm">에디터</h1>
+                <h1 className="font-bold text-gray-800 hidden sm:block text-sm">이전</h1>
               </div>
 
               <div className="flex bg-gray-100 p-1 rounded-lg">
