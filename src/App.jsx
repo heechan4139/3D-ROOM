@@ -238,7 +238,12 @@ export default function App() {
 
           {notice && <p className="editor-notice" role="status">{notice}</p>}
           <div className="room-workspace">
-            <aside ref={roomControlsRef} className="room-controls" aria-label="방 설정">
+            <div className="room-workspace-heading">
+              <span className="room-workspace-title">MY ROOM <b>· {roomType}형 · 2D</b></span>
+              <span className="room-workspace-detail">화장실 포함 · 가구 실측 비율</span>
+            </div>
+            <div className="room-editor-body">
+              <aside ref={roomControlsRef} className="room-controls" aria-label="방 설정">
               <div className={openRoomControl === 'size' ? 'room-control-item is-open' : 'room-control-item'}>
                 <button type="button" className="room-control-trigger" data-room-control-trigger="size"
                   aria-label={roomSize + '평 선택'} aria-expanded={openRoomControl === 'size'} aria-controls="room-size-options"
@@ -274,8 +279,9 @@ export default function App() {
                   {[['wood', '우드'], ['black', '검정'], ['white', '흰색']].map(([value, label]) => <button type="button" key={value} className="room-control-option" aria-pressed={floorColor === value} onClick={() => { setFloorColor(value); setOpenRoomControl(null); }}><span className={`floor-swatch floor-${value}`} aria-hidden="true" />{label}</button>)}
                 </div>
               </div>
-            </aside>
-            <RoomPlan exportRef={exportRef} room={roomDim} floorColor={floorColor} items={placedItems} selectedId={selectedId} onSelect={setSelectedId} onChange={updateItem} onDelete={handleDeleteItem} onRotate={rotateItem} />
+              </aside>
+              <RoomPlan exportRef={exportRef} room={roomDim} floorColor={floorColor} items={placedItems} selectedId={selectedId} onSelect={setSelectedId} onChange={updateItem} onDelete={handleDeleteItem} onRotate={rotateItem} />
+            </div>
           </div>
 
           <div 

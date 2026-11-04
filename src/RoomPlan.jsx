@@ -106,7 +106,6 @@ export default function RoomPlan({ room, floorColor, items, selectedId, onSelect
     if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
   };
   return <section className="plan-stage" aria-label="2D 방꾸미기">
-    <div className="plan-caption"><span>MY ROOM <b>· {room.type}형 · 2D</b></span><span>화장실 포함 · 가구 실측 비율</span></div>
     <div className="zoom-controls" role="group" aria-label="화면 확대 축소"><button aria-label="축소" disabled={zoom <= 1} onClick={() => setZoom(z => Math.max(1, z - .25))}>−</button><button aria-label="화면 맞춤" onClick={() => setZoom(1)}>{Math.round(zoom * 100)}%</button><button aria-label="확대" disabled={zoom >= 3} onClick={() => setZoom(z => Math.min(3, z + .25))}>＋</button></div>
     <div ref={canvasRef} className="plan-canvas" onPointerDown={startCanvasPointer} onPointerMove={moveCanvas} onPointerUp={finishCanvas} onPointerCancel={finishCanvas} onLostPointerCapture={() => { pan.current = null; }}>
       <div className="plan-zoom-content" style={{width: `${zoom * 100}%`, height: `${zoom * 100}%`}}>
