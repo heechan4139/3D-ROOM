@@ -4,6 +4,9 @@ import {
   ChevronLeft, Lock, Download, Quote, Check, Plus, Box, X, Table, Bed, Layers, ChevronRight
 } from 'lucide-react';
 
+import entryQuestionBase64 from './assets/entry-question.b64?raw';
+import instagramFollowBase64 from './assets/instagram-follow.b64?raw';
+
 // --- 가구 아이콘 렌더링 헬퍼 ---
 const renderIcon = (id, size = 24, className = "text-gray-700") => {
   switch (id) {
@@ -226,12 +229,24 @@ export default function App() {
                 </button>
               </div>
 
-              <button 
-                onClick={() => setStep('success')}
-                className="text-white font-bold text-xs px-3 py-1.5 bg-[#35C5F0] rounded-lg shadow-sm hover:bg-[#28AADC] transition-colors"
-              >
-                응모
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => triggerAppModal('entry')}
+                  className="flex items-center gap-1 text-[11px] font-bold text-amber-500 hover:text-amber-600 whitespace-nowrap"
+                  aria-label="응모방법 보기"
+                >
+                  <span className="w-5 h-5 flex items-center justify-center">
+                    <img src={"data:image/png;base64," + entryQuestionBase64.trim()} alt="" className="w-full h-full object-contain" />
+                  </span>
+                  응모방법
+                </button>
+                <button 
+                  onClick={() => setStep('success')}
+                  className="text-white font-bold text-xs px-3 py-1.5 bg-[#35C5F0] rounded-lg shadow-sm hover:bg-[#28AADC] transition-colors"
+                >
+                  응모
+                </button>
+              </div>
             </div>
 
             <div className="flex justify-center gap-2">
@@ -372,7 +387,7 @@ export default function App() {
       )}
 
       {/* 4. MODAL */}
-      {modalState.isOpen && (
+      {modalState.isOpen && modalState.type !== 'entry' && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-5 transition-opacity">
           <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="bg-[#35C5F0] p-6 text-center text-white relative">
@@ -420,6 +435,98 @@ export default function App() {
           </div>
         </div>
       )}
+      {modalState.isOpen && modalState.type === 'entry' && (
+        <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="entry-guide-title"
+            className="relative w-full max-w-sm max-h-[92vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
+          >
+            <header className="flex-shrink-0 bg-[#35C5F0] text-white px-5 py-4">
+              <button
+                onClick={() => setModalState({ isOpen: false, type: '' })}
+                className="absolute top-3 right-3 p-1 text-white/80 hover:text-white"
+                aria-label="응모방법 닫기"
+              >
+                <X size={20} />
+              </button>
+              <p className="text-xs font-bold text-white/80 mb-1">오늘의집 공모전</p>
+              <h2 id="entry-guide-title" className="text-xl font-extrabold">응모 방법</h2>
+            </header>
+
+            <div className="overflow-y-auto p-5">
+              <figure className="mb-5">
+                <img
+                  src={"data:image/jpeg;base64," + instagramFollowBase64.trim()}
+                  alt="오늘의집 인스타그램 프로필과 팔로우 버튼 예시"
+                  className="w-full rounded-xl border border-gray-100 shadow-sm"
+                />
+                <figcaption className="mt-2 text-center text-[11px] text-gray-500">
+                  오늘의집 인스타그램 팔로우 화면 예시
+                </figcaption>
+              </figure>
+
+              <ol className="space-y-3">
+                <li className="flex gap-3 rounded-xl bg-gray-50 p-3.5">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#35C5F0] text-white text-xs font-extrabold flex items-center justify-center">1</span>
+                  <div>
+                    <h3 className="font-bold text-sm text-gray-900">인스타그램 및 유튜브 팔로우</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-gray-600">오늘의집 인스타그램과 유튜브 계정을 모두 팔로우해 주세요.</p>
+                  </div>
+                </li>
+                <li className="flex gap-3 rounded-xl bg-gray-50 p-3.5">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#35C5F0] text-white text-xs font-extrabold flex items-center justify-center">2</span>
+                  <div>
+                    <h3 className="font-bold text-sm text-gray-900">해시태그와 함께 인스타그램 게시물 올리기</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-gray-600">완성한 공간과 사연을 인스타그램 게시물로 올리고 아래 해시태그를 달아 주세요.</p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">#챌린지이름</span>
+                      <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">#오늘의집</span>
+                    </div>
+                    <p className="mt-2 text-[10px] leading-relaxed text-gray-500">챌린지 이름이 정해지면 #챌린지이름 부분을 실제 해시태그로 바꿔 주세요.</p>
+                  </div>
+                </li>
+              </ol>
+
+              <section className="mt-8 border-t-2 border-gray-100 pt-5">
+                <p className="text-[11px] font-bold tracking-wide text-[#35C5F0] mb-1">WINNER SELECTION</p>
+                <h3 className="text-lg font-extrabold text-gray-900 mb-3">평가 방식</h3>
+                <ul className="space-y-3 text-xs leading-relaxed text-gray-700">
+                  <li><strong className="text-gray-900">대중 공감 지수 (50%)</strong><br />SNS를 뜨겁게 달군 좋아요(반응) 수</li>
+                  <li><strong className="text-gray-900">전문가 심사 지수 (30%)</strong><br />마케팅·콘텐츠 전문가의 완성도 및 독창성 평가</li>
+                  <li><strong className="text-gray-900">스토리텔링 지수 (20%)</strong><br />마음을 울리는 사연자(주인공)의 진정성 평가</li>
+                </ul>
+              </section>
+
+              <div className="mt-5 rounded-xl bg-blue-50 p-3.5 text-center">
+                <p className="text-sm font-bold text-gray-900">응모 결과는 오늘의집 앱에서 확인할 수 있어요.</p>
+                <p className="mt-1 text-[11px] text-gray-600">오늘의집 앱을 다운로드해 공모전 소식과 결과를 확인해 주세요.</p>
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <a
+                  href="https://play.google.com/store/apps/details?id=net.bucketplace"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="py-3 px-2 rounded-xl font-bold text-white text-xs bg-gray-900 hover:bg-black flex justify-center items-center gap-1.5 shadow-sm"
+                >
+                  <Download size={16} /> Google Play
+                </a>
+                <a
+                  href="https://apps.apple.com/kr/app/%EC%98%A4%EB%8A%98%EC%9D%98%EC%A7%91-%EB%9D%BC%EC%9D%B4%ED%94%84%EC%8A%A4%ED%83%80%EC%9D%BC-%EC%8A%88%ED%8D%BC%EC%95%B1/id1008236892"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="py-3 px-2 rounded-xl font-bold text-white text-xs bg-gray-900 hover:bg-black flex justify-center items-center gap-1.5 shadow-sm"
+                >
+                  <Download size={16} /> App Store
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
+
       <div className="absolute bottom-0 left-0 right-0 z-40 pointer-events-none bg-white/90 text-[9px] text-gray-400 text-center py-1.5">
         ※ 할인율이나 프로그램 실행은 실제와 다를 수 있습니다.
       </div>
