@@ -6,20 +6,33 @@ body { margin: 0; background: #edf1f3; }
 button, a, [role="button"] { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offset: 3px; }
 .app-shell { height: 100dvh; }
-.room-options-row { display: flex; gap: 6px; align-items: center; }
-.option-label { color: #7b8b92; font-size: 10px; margin-right: 2px; flex-shrink: 0; }
-.room-options-row > button { padding-left: 12px; padding-right: 12px; }
-.room-type-options { margin-left: auto; display: flex; background: #eef3f5; border-radius: 8px; padding: 3px; }
-.room-type-options button { padding: 4px 11px; border-radius: 6px; font-size: 11px; color: #7a898f; font-weight: 700; }
-.room-type-options button[aria-pressed="true"] { background: white; color: #0e9bc0; box-shadow: 0 1px 4px #203c4a15; }
-.floor-options { gap: 8px; }
-.floor-options > button { display: flex; align-items: center; gap: 4px; padding: 4px 6px; border: 1px solid transparent; border-radius: 6px; font-size: 10px; color: #718187; }
-.floor-options > button[aria-pressed="true"] { border-color: #35bddc; color: #109ec1; background: #effbff; }
-.floor-swatch { width: 13px; height: 13px; border: 1px solid #00000016; border-radius: 50%; }
-.floor-wood { background: #e9dfcf; }
-.floor-black { background: #272b2d; }
-.floor-white { background: #f5f5f1; }
-.layout-description { margin-left: auto; font-size: 8px; color: #94a0a5; }
+.editor-view-row { display:flex; align-items:center; justify-content:space-between; min-height:36px; }
+.editor-view-toggle { display:inline-flex; gap:3px; padding:3px; background:#eff3f5; border-radius:10px; }
+.editor-view-toggle button { min-width:48px; padding:6px 12px; border-radius:8px; color:#7b8b92; font-size:12px; font-weight:700; transition:background .16s,color .16s,box-shadow .16s; }
+.editor-view-toggle button[aria-pressed="true"] { background:white; color:#263d47; box-shadow:0 1px 4px #203c4a18; }
+.story-button { display:flex; align-items:center; gap:6px; padding:7px 11px; border:1px solid #d9eef4; border-radius:9px; color:#149ebf; background:#effbff; font-size:12px; font-weight:700; }
+.story-button:hover { background:#e3f7fc; }
+.floor-swatch { width:13px; height:13px; flex:none; border:1px solid #00000016; border-radius:50%; }
+.floor-wood { background:#e9dfcf; }
+.floor-black { background:#272b2d; }
+.floor-white { background:#f5f5f1; }
+.room-workspace { position:relative; isolation:isolate; display:flex; flex:1; min-height:0; background:#f0f3f4; }
+.room-controls { position:relative; z-index:20; display:flex; flex:0 0 82px; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:12px 5px; }
+.room-control-item { position:relative; z-index:1; }
+.room-control-item.is-open { z-index:30; }
+.room-control-trigger { display:flex; width:64px; height:64px; flex-direction:column; align-items:center; justify-content:center; gap:2px; border:1px solid #dce5e8; border-radius:50%; color:#52656e; background:white; box-shadow:0 2px 8px #203c4a10; transition:border-color .16s,background .16s,transform .16s,box-shadow .16s; }
+.room-control-trigger:hover { transform:translateY(-1px); border-color:#35bddc; }
+.room-control-trigger[aria-expanded="true"] { border-color:#35bddc; color:#109ec1; background:#f2fcff; box-shadow:0 0 0 3px #35bddc20; }
+.room-control-value { font-size:13px; line-height:1.15; font-weight:800; }
+.room-control-label { color:#87969c; font-size:9px; line-height:1.15; }
+.room-control-floor-swatch { margin-bottom:1px; }
+.room-control-menu { position:absolute; top:50%; left:calc(100% + 9px); z-index:40; display:grid; width:136px; gap:3px; padding:9px; transform:translateY(-50%); border:1px solid #e1e9ec; border-radius:13px; background:white; box-shadow:0 10px 28px #1e354326; }
+.room-control-menu[hidden] { display:none; }
+.room-control-menu-title { padding:2px 7px 5px; color:#839197; font-size:10px; font-weight:600; }
+.room-control-option { display:flex; min-height:38px; align-items:center; gap:8px; padding:0 9px; border:0; border-radius:8px; color:#53666e; background:transparent; font-size:12px; font-weight:600; text-align:left; cursor:pointer; }
+.room-control-option:hover { background:#f4f8fa; }
+.room-control-option[aria-pressed="true"] { color:#0e9ec2; background:#effbff; font-weight:800; }
+.plan-stage { min-width:0; }
 .plan-stage { flex: 1; min-height: 220px; display: flex; flex-direction: column; padding: 12px 16px 8px; background: #f0f3f4; }
 .plan-caption { display: flex; align-items: center; justify-content: space-between; font-size: 9px; color: #8b979c; letter-spacing: .04em; }
 .plan-caption > span:first-child { color: #4b626c; font-weight: 800; }
@@ -51,10 +64,18 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 }
 @media (max-height: 680px) {
   .app-shell { height: auto; min-height: 100dvh; overflow: auto; }
+  .room-workspace { min-height: 340px; }
   .plan-stage { height: 340px; flex: none; }
 }
+@media (max-width:420px) {
+  .room-controls { flex-basis:68px; padding-left:3px; padding-right:3px; gap:12px; }
+  .room-control-trigger { width:56px; height:56px; }
+  .room-control-value { font-size:12px; }
+  .room-control-menu { left:calc(100% + 7px); width:128px; }
+  .plan-stage { padding-left:10px; padding-right:10px; }
+  .editor-view-toggle button { min-width:44px; padding-left:10px; padding-right:10px; }
+}
 
-.floor-options > .story-button { margin-left:auto; color:#149ebf; font-weight:700; background:#effbff; }
 .plan-canvas { display:block; overflow:auto; padding:0; overscroll-behavior:contain; }
 .plan-zoom-content { min-width:100%; min-height:100%; }
 .plan-canvas svg { display:block; overflow:hidden; }

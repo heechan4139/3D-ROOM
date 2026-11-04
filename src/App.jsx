@@ -12,6 +12,8 @@ export default function App() {
   const [roomType, setRoomType] = useState('A');
   const [floorColor, setFloorColor] = useState('wood');
   const [viewMode, setViewMode] = useState('2d');
+  const [openRoomControl, setOpenRoomControl] = useState(null);
+  const roomControlsRef = useRef(null);
   const [placedItems, setPlacedItems] = useState(() => defaultAppliances(roomDimensions(7, 'A')));
   const [selectedId, setSelectedId] = useState(null);
   const dialogRef = useRef(null);
@@ -103,6 +105,25 @@ export default function App() {
   };
 
   useEffect(() => {
+    if (!openRoomControl) return;
+    const closeOnOutside = event => {
+      if (!roomControlsRef.current?.contains(event.target)) setOpenRoomControl(null);
+    };
+    const closeOnEscape = event => {
+      if (event.key === 'Escape') {
+        setOpenRoomControl(null);
+        roomControlsRef.current?.querySelector('[data-room-control-trigger="' + openRoomControl + '"]')?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', closeOnOutside);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutside);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [openRoomControl]);
+
+  useEffect(() => {
     if (!modalState.isOpen) return;
     const previous = document.activeElement;
     dialogRef.current?.focus();
@@ -184,21 +205,6 @@ export default function App() {
                 <h1 className="font-bold text-gray-800 hidden sm:block text-sm">이전</h1>
               </div>
 
-              <div className="flex bg-gray-100 p-1 rounded-lg">
-                <button 
-                  className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${viewMode === '2d' ? 'bg-white text-black shadow-sm' : 'text-gray-400'}`}
-                  onClick={() => setViewMode('2d')}
-                >
-                  2D
-                </button>
-                <button 
-                  className={`px-3 py-1 text-xs font-bold rounded-md transition-all text-gray-500 hover:text-black`}
-                  onClick={() => triggerAppModal('3d')}
-                >
-                  3D
-                </button>
-              </div>
-
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => triggerAppModal('entry')}
@@ -219,35 +225,58 @@ export default function App() {
               </div>
             </div>
 
-            <div className="room-options-row">
-              <span className="option-label">평수</span>
-              {[5, 7, 10].map((size) => (
-                <button
-                  key={size}
-                  aria-pressed={roomSize === size}
-                  onClick={() => changeRoomSize(size)}
-                  className={`px-4 py-1.5 text-xs font-bold rounded-full transition-all border ${
-                    roomSize === size 
-                      ? 'border-[#35C5F0] bg-blue-50 text-[#35C5F0]' 
-                      : 'border-gray-200 bg-white text-gray-500 hover:bg-gray-50'
-                  }`}
-                >
-                  {size}평
-                </button>
-              ))}
-              <div className="room-type-options" role="group" aria-label="방 구조 선택">
-                {['A', 'B'].map(type => <button key={type} aria-pressed={roomType === type} onClick={() => changeRoomSize(roomSize, type)}>{type}형</button>)}
+            <div className="editor-view-row">
+              <div className="editor-view-toggle" role="group" aria-label="방 보기 방식">
+                <button type="button" aria-pressed={viewMode === '2d'} onClick={() => setViewMode('2d')}>2D</button>
+                <button type="button" aria-pressed="false" onClick={() => triggerAppModal('3d')}>3D</button>
               </div>
-            </div>
-            <div className="room-options-row floor-options" role="group" aria-label="바닥 색 선택">
-              <span className="option-label">바닥</span>
-              {[['wood', '우드'], ['black', '검정'], ['white', '흰색']].map(([value, label]) => <button key={value} aria-pressed={floorColor === value} aria-label={`${label} 바닥`} onClick={() => setFloorColor(value)}><span className={`floor-swatch floor-${value}`} />{label}</button>)}
-              <button className="story-button" onClick={() => triggerAppModal('story')}>사연보기</button>
+              <button type="button" className="story-button" onClick={() => triggerAppModal('story')}>
+                <Quote size={14} /> 사연보기
+              </button>
             </div>
           </header>
 
           {notice && <p className="editor-notice" role="status">{notice}</p>}
-          <RoomPlan exportRef={exportRef} room={roomDim} floorColor={floorColor} items={placedItems} selectedId={selectedId} onSelect={setSelectedId} onChange={updateItem} onDelete={handleDeleteItem} onRotate={rotateItem} />
+          <div className="room-workspace">
+            <aside ref={roomControlsRef} className="room-controls" aria-label="방 설정">
+              <div className={openRoomControl === 'size' ? 'room-control-item is-open' : 'room-control-item'}>
+                <button type="button" className="room-control-trigger" data-room-control-trigger="size"
+                  aria-label={roomSize + '평 선택'} aria-expanded={openRoomControl === 'size'} aria-controls="room-size-options"
+                  onClick={() => setOpenRoomControl(current => current === 'size' ? null : 'size')}>
+                  <span className="room-control-value">{roomSize}평</span><span className="room-control-label">평수</span>
+                </button>
+                <div className="room-control-menu" id="room-size-options" role="group" aria-label="평수 선택" hidden={openRoomControl !== 'size'}>
+                  <span className="room-control-menu-title">평수 선택</span>
+                  {[5, 7, 10].map(size => <button type="button" key={size} className="room-control-option" aria-pressed={roomSize === size} onClick={() => { changeRoomSize(size); setOpenRoomControl(null); }}>{size}평</button>)}
+                </div>
+              </div>
+              <div className={openRoomControl === 'type' ? 'room-control-item is-open' : 'room-control-item'}>
+                <button type="button" className="room-control-trigger" data-room-control-trigger="type"
+                  aria-label={roomType + '형 선택'} aria-expanded={openRoomControl === 'type'} aria-controls="room-type-options"
+                  onClick={() => setOpenRoomControl(current => current === 'type' ? null : 'type')}>
+                  <span className="room-control-value">{roomType}형</span><span className="room-control-label">구조</span>
+                </button>
+                <div className="room-control-menu" id="room-type-options" role="group" aria-label="방 구조 선택" hidden={openRoomControl !== 'type'}>
+                  <span className="room-control-menu-title">구조 선택</span>
+                  {['A', 'B'].map(type => <button type="button" key={type} className="room-control-option" aria-pressed={roomType === type} onClick={() => { changeRoomSize(roomSize, type); setOpenRoomControl(null); }}>{type}형</button>)}
+                </div>
+              </div>
+              <div className={openRoomControl === 'floor' ? 'room-control-item is-open' : 'room-control-item'}>
+                <button type="button" className="room-control-trigger" data-room-control-trigger="floor"
+                  aria-label={(floorColor === 'wood' ? '우드' : floorColor === 'black' ? '검정' : '흰색') + ' 바닥 선택'}
+                  aria-expanded={openRoomControl === 'floor'} aria-controls="room-floor-options"
+                  onClick={() => setOpenRoomControl(current => current === 'floor' ? null : 'floor')}>
+                  <span className={`floor-swatch floor-${floorColor} room-control-floor-swatch`} aria-hidden="true" />
+                  <span className="room-control-value">{floorColor === 'wood' ? '우드' : floorColor === 'black' ? '검정' : '흰색'}</span><span className="room-control-label">바닥</span>
+                </button>
+                <div className="room-control-menu" id="room-floor-options" role="group" aria-label="바닥 색 선택" hidden={openRoomControl !== 'floor'}>
+                  <span className="room-control-menu-title">바닥 선택</span>
+                  {[['wood', '우드'], ['black', '검정'], ['white', '흰색']].map(([value, label]) => <button type="button" key={value} className="room-control-option" aria-pressed={floorColor === value} onClick={() => { setFloorColor(value); setOpenRoomControl(null); }}><span className={`floor-swatch floor-${value}`} aria-hidden="true" />{label}</button>)}
+                </div>
+              </div>
+            </aside>
+            <RoomPlan exportRef={exportRef} room={roomDim} floorColor={floorColor} items={placedItems} selectedId={selectedId} onSelect={setSelectedId} onChange={updateItem} onDelete={handleDeleteItem} onRotate={rotateItem} />
+          </div>
 
           <div 
             className="bg-[#FF6B6B] text-white text-xs font-bold py-2.5 px-4 text-center cursor-pointer flex items-center justify-center gap-2 z-30 shadow-md hover:bg-[#fa5a5a] transition-colors"
