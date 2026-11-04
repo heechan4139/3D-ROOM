@@ -50,7 +50,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 .selection-bar small { display: block; font-size: 9px; color: #89969a; }
 .selection-bar button { display: flex; align-items: center; gap: 4px; border: 1px solid #dce4e7; background: white; border-radius: 9px; padding: 9px; font-size: 11px; color: #52656e; }
 .selection-bar button:first-of-type { color: #119fc7; }
-.selection-bar p { font-size: 10px; color: #8a989e; text-align: center; transform:translateX(24px); }
+.selection-bar p { font-size: 10px; color: #8a989e; text-align: center; transform:translateX(-31px); }
 .furniture-panel { height: 274px; flex-shrink: 0; }
 .furniture-panel .w-16.h-16 { width: 52px; height: 52px; margin-bottom: 4px; }
 .furniture-panel .w-14.h-14 { width: 46px; height: 46px; }
@@ -81,6 +81,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
   .room-control-menu { left:calc(100% + 7px); width:128px; }
   .plan-stage { padding-left:10px; padding-right:10px; }
   .editor-view-toggle button { min-width:44px; padding-left:10px; padding-right:10px; }
+  .selection-bar p { transform:translateX(-24px); }
 }
 
 .plan-canvas { display:block; overflow:auto; padding:0; overscroll-behavior:contain; }
