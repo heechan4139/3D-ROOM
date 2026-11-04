@@ -285,3 +285,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 
 @keyframes intro-sparkle-rotate{0%{transform:rotate(0deg) scale(.94)}50%{transform:rotate(180deg) scale(1.06)}100%{transform:rotate(360deg) scale(.94)}}
 @media(prefers-reduced-motion:reduce){.intro-judging-heading>.intro-judging-sparkle{animation:none}}
+
+/* Match the fine yellow sparkle shown in the preview: a gentle pulse and side drift. */
+.intro-judging-heading>.intro-judging-sparkle{animation:intro-sparkle-drift 2.6s ease-in-out infinite}
+@keyframes intro-sparkle-drift{0%,100%{transform:translateX(-2px) scale(.94)}50%{transform:translateX(2px) scale(1.06)}}
+@media(prefers-reduced-motion:reduce){.intro-judging-heading>.intro-judging-sparkle{animation:none}}
