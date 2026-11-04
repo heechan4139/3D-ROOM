@@ -147,7 +147,7 @@ export default function App() {
 
       {/* 1. INTRO SCREEN */}
       {step === 'intro' && (
-        <div className="flex flex-col h-full bg-white animate-in fade-in duration-500 overflow-y-auto">
+        <div className="intro-screen flex flex-col h-full bg-white animate-in fade-in duration-500 overflow-y-auto">
           <div className="h-2/5 bg-gradient-to-br from-[#35C5F0] to-[#1DA9D4] rounded-b-[3rem] relative flex items-center justify-center p-6 shadow-sm flex-shrink-0">
             <div className="absolute top-8 left-6 text-white font-bold text-xl tracking-tight">
               오늘의집 <span className="font-light opacity-90">공모전</span>
@@ -158,7 +158,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex-1 px-6 -mt-8 relative z-10 pb-6 flex flex-col justify-between">
+          <div className="intro-content flex-1 px-6 -mt-8 relative z-10 pb-6 flex flex-col justify-between">
             <div className="bg-white rounded-2xl shadow-xl p-5 border border-gray-100 animate-float">
               <div className="flex items-center gap-2 mb-3 text-[#35C5F0]">
                 <Quote size={18} className="rotate-180" />
