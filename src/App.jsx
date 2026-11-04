@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import RoomPlan, { FurnitureShape } from './RoomPlan';
 import { CATALOG_ITEMS, roomDimensions, constrainItem, defaultAppliances } from './roomGeometry';
-import { ChevronLeft, Lock, Download, Quote, Check, Plus, Box, ChevronRight } from 'lucide-react';
+import { ChevronLeft, Lock, Download, Quote, Check, Plus, Box, ChevronRight, Home } from 'lucide-react';
 
 import entryQuestionBase64 from './assets/entry-question.b64?raw';
 import instagramFollowBase64 from './assets/instagram-follow.b64?raw';
@@ -180,7 +180,7 @@ export default function App() {
           <div className="intro-content">
             <section className="intro-story-card" aria-labelledby="intro-story-title">
               <div className="intro-story-head">
-                <div className="intro-avatar" aria-hidden="true">🏠</div>
+                <div className="intro-avatar" aria-hidden="true"><Home size={23} strokeWidth={2.4} /></div>
                 <div><p className="intro-eyebrow">오늘의집에 도착한 사연</p><h2 id="intro-story-title">OOO님의 사연</h2></div>
                 <Quote className="intro-quote-mark" size={42} aria-hidden="true" />
               </div>
