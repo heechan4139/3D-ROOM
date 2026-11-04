@@ -186,7 +186,7 @@ export default function App() {
               </div>
               <blockquote>
                 첫 독립을 시작한 사회초년생입니다. 작은 원룸을 제 취향대로 꾸며보고 싶은데,
-                어떤 가구를 골라야 할지 아직 막막해요. 예산은 <strong>500만 원 정도</strong>로 생각하고 있어요.
+                어떤 가구를 골라야 할지 아직 막막해요. 예산은 <strong>500만 원 정도</strong>로 생각하고 있어요.<br />
                 깔끔하고 모던하면서도 오래 머물고 싶은 방을 함께 만들어 주세요!
               </blockquote>
               <div className="intro-story-tags"><span>사회초년생</span><span>작은 원룸</span><span>예산 약 500만 원</span></div>
