@@ -417,7 +417,7 @@ export default function App() {
                 <span className="font-bold text-gray-900">앱을 설치하고 공모전에 응모해보세요!</span>
               </p>
               
-              <a href="https://play.google.com/store/apps/details?id=net.bucketplace&gl=KR" target="_blank" rel="noreferrer"
+              <a href="https://play.google.com/store/apps/details?id=net.bucketplace&hl=ko" target="_blank" rel="noreferrer"
                 className="w-full py-3.5 rounded-xl font-bold text-white bg-[#35C5F0] hover:bg-[#28AADC] flex justify-center items-center gap-2 shadow-md active:scale-95 transition-transform"
               >
                 <Download size={18} /> Google Play에서 다운로드
@@ -517,7 +517,7 @@ export default function App() {
 
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <a
-                  href="https://play.google.com/store/apps/details?id=net.bucketplace"
+                  href="https://play.google.com/store/apps/details?id=net.bucketplace&hl=ko"
                   target="_blank"
                   rel="noreferrer"
                   className="py-3 px-2 rounded-xl font-bold text-white text-xs bg-gray-900 hover:bg-black flex justify-center items-center gap-1.5 shadow-sm"
