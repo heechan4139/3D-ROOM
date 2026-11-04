@@ -256,7 +256,7 @@ export default function App() {
               </div>
 
               <section className="intro-judging intro-reveal" aria-labelledby="intro-judging-title">
-                <div className="intro-judging-heading"><div><p className="intro-eyebrow">WINNER SELECTION</p><h3 id="intro-judging-title">평가 방식</h3><p>세 가지 기준을 종합해 수상작을 선정합니다.</p></div><span aria-hidden="true">✳</span></div>
+                <div className="intro-judging-heading"><div><p className="intro-eyebrow">WINNER SELECTION</p><h3 id="intro-judging-title">평가 방식</h3><p>세 가지 기준을 종합해 수상작을 선정합니다.</p></div><span className="intro-judging-sparkle" aria-hidden="true">✨</span></div>
                 <div className="intro-score-grid">
                   <article><div><b>대중 공감 지수</b><strong>50<small>%</small></strong></div><p>SNS 반응을 모은 <b>좋아요 수</b></p><i style={{ '--score': '50%' }} /></article>
                   <article><div><b>전문가 심사 지수</b><strong>30<small>%</small></strong></div><p>마케팅·콘텐츠 전문가의 <b>완성도와 독창성 평가</b></p><i style={{ '--score': '30%' }} /></article>
