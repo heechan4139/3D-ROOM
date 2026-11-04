@@ -12,6 +12,7 @@ export default function App() {
   const [roomType, setRoomType] = useState('A');
   const [floorColor, setFloorColor] = useState('wood');
   const [viewMode, setViewMode] = useState('2d');
+  const [roomZoom, setRoomZoom] = useState(1);
   const [openRoomControl, setOpenRoomControl] = useState(null);
   const roomControlsRef = useRef(null);
   const [placedItems, setPlacedItems] = useState(() => defaultAppliances(roomDimensions(7, 'A')));
@@ -240,7 +241,14 @@ export default function App() {
           <div className="room-workspace">
             <div className="room-workspace-heading">
               <span className="room-workspace-title">MY ROOM <b>· {roomType}형 · 2D</b></span>
-              <span className="room-workspace-detail">화장실 포함 · 가구 실측 비율</span>
+              <div className="room-workspace-meta">
+                <span className="room-workspace-detail">화장실 포함 · 가구 실측 비율</span>
+                <div className="zoom-controls" role="group" aria-label="화면 확대 축소">
+                  <button type="button" aria-label="축소" disabled={roomZoom <= 1} onClick={() => setRoomZoom(zoom => Math.max(1, zoom - .25))}>−</button>
+                  <button type="button" aria-label="화면 맞춤" onClick={() => setRoomZoom(1)}>{Math.round(roomZoom * 100)}%</button>
+                  <button type="button" aria-label="확대" disabled={roomZoom >= 3} onClick={() => setRoomZoom(zoom => Math.min(3, zoom + .25))}>＋</button>
+                </div>
+              </div>
             </div>
             <div className="room-editor-body">
               <aside ref={roomControlsRef} className="room-controls" aria-label="방 설정">
@@ -280,7 +288,7 @@ export default function App() {
                 </div>
               </div>
               </aside>
-              <RoomPlan exportRef={exportRef} room={roomDim} floorColor={floorColor} items={placedItems} selectedId={selectedId} onSelect={setSelectedId} onChange={updateItem} onDelete={handleDeleteItem} onRotate={rotateItem} />
+              <RoomPlan exportRef={exportRef} room={roomDim} floorColor={floorColor} items={placedItems} selectedId={selectedId} onSelect={setSelectedId} onChange={updateItem} onDelete={handleDeleteItem} onRotate={rotateItem} zoom={roomZoom} />
             </div>
           </div>
 

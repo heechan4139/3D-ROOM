@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { RotateCw, Trash2, Check } from 'lucide-react';
 import { footprint, roomLayout } from './roomGeometry';
 import RoomFixtures, { ApplianceShape } from './RoomFixtures';
@@ -63,12 +63,11 @@ export function FurnitureShape({ item }) {
   </g>;
 }
 
-export default function RoomPlan({ room, floorColor, items, selectedId, onSelect, onChange, onDelete, onRotate, exportRef }) {
+export default function RoomPlan({ room, floorColor, items, selectedId, onSelect, onChange, onDelete, onRotate, exportRef, zoom = 1 }) {
   const svgRef = useRef(null);
   const drag = useRef(null);
   const canvasRef = useRef(null);
   const pan = useRef(null);
-  const [zoom, setZoom] = useState(1);
   const { width: w, height: h } = room;
   const { outline, entry } = roomLayout(room);
   const entryDoor = entry ? Math.min(70, entry.height - 16) : 70;
@@ -106,7 +105,6 @@ export default function RoomPlan({ room, floorColor, items, selectedId, onSelect
     if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
   };
   return <section className="plan-stage" aria-label="2D 방꾸미기">
-    <div className="zoom-controls" role="group" aria-label="화면 확대 축소"><button aria-label="축소" disabled={zoom <= 1} onClick={() => setZoom(z => Math.max(1, z - .25))}>−</button><button aria-label="화면 맞춤" onClick={() => setZoom(1)}>{Math.round(zoom * 100)}%</button><button aria-label="확대" disabled={zoom >= 3} onClick={() => setZoom(z => Math.min(3, z + .25))}>＋</button></div>
     <div ref={canvasRef} className="plan-canvas" onPointerDown={startCanvasPointer} onPointerMove={moveCanvas} onPointerUp={finishCanvas} onPointerCancel={finishCanvas} onLostPointerCapture={() => { pan.current = null; }}>
       <div className="plan-zoom-content" style={{width: `${zoom * 100}%`, height: `${zoom * 100}%`}}>
       <svg ref={node => { svgRef.current = node; if (exportRef) exportRef.current = node; }} viewBox={`-24 -24 ${w + (room.type === 'B' ? 105 : 48)} ${h + 70}`} aria-label="주방과 화장실이 있는 원룸 평면도" onPointerMove={move} onPointerUp={finish} onPointerCancel={finish} onLostPointerCapture={() => { drag.current = null; }}>
