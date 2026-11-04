@@ -125,6 +125,24 @@ export default function App() {
   }, [openRoomControl]);
 
   useEffect(() => {
+    if (step !== 'intro') return;
+    const revealItems = document.querySelectorAll('.intro-page .intro-reveal');
+    if (!('IntersectionObserver' in window)) {
+      revealItems.forEach(item => item.classList.add('is-visible'));
+      return;
+    }
+    const observer = new IntersectionObserver((entries, currentObserver) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        currentObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -36px 0px' });
+    revealItems.forEach(item => observer.observe(item));
+    return () => observer.disconnect();
+  }, [step]);
+
+  useEffect(() => {
     if (!modalState.isOpen) return;
     const previous = document.activeElement;
     dialogRef.current?.focus();
@@ -147,48 +165,113 @@ export default function App() {
 
       {/* 1. INTRO SCREEN */}
       {step === 'intro' && (
-        <div className="intro-screen flex flex-col h-full bg-white animate-in fade-in duration-500 overflow-y-auto">
-          <div className="h-2/5 bg-gradient-to-br from-[#35C5F0] to-[#1DA9D4] rounded-b-[3rem] relative flex items-center justify-center p-6 shadow-sm flex-shrink-0">
-            <div className="absolute top-8 left-6 text-white font-bold text-xl tracking-tight">
-              오늘의집 <span className="font-light opacity-90">공모전</span>
+        <div className="intro-screen intro-page flex flex-col h-full overflow-y-auto">
+          <section className="intro-hero">
+            <div className="intro-hero-orb intro-orb-one" aria-hidden="true" />
+            <div className="intro-hero-orb intro-orb-two" aria-hidden="true" />
+            <div className="intro-hero-inner">
+              <div className="intro-brand"><strong>오늘의집</strong><span>공모전</span></div>
+              <p className="intro-kicker">YOUR ROOM, YOUR STORY</p>
+              <h1>대국민 방꾸미기<br /><em>프로젝트</em></h1>
+              <p className="intro-subtitle">당신의 센스로 누군가의 로망을 이뤄주세요!</p>
             </div>
-            <div className="text-white text-center mt-6">
-              <h1 className="text-3xl font-extrabold mb-2">대국민 방꾸미기<br/>프로젝트</h1>
-              <p className="text-blue-50 opacity-90 text-sm">당신의 센스로 누군가의 로망을 이뤄주세요!</p>
-            </div>
-          </div>
+          </section>
 
-          <div className="intro-content flex-1 px-6 -mt-8 relative z-10 pb-6 flex flex-col justify-between">
-            <div className="bg-white rounded-2xl shadow-xl p-5 border border-gray-100 animate-float">
-              <div className="flex items-center gap-2 mb-3 text-[#35C5F0]">
-                <Quote size={18} className="rotate-180" />
-                <span className="font-bold text-xs bg-blue-50 px-2 py-1 rounded-full">OOO님의 사연</span>
+          <div className="intro-content">
+            <section className="intro-story-card" aria-labelledby="intro-story-title">
+              <div className="intro-story-head">
+                <div className="intro-avatar" aria-hidden="true">OOO</div>
+                <div><p className="intro-eyebrow">오늘의집에 도착한 사연</p><h2 id="intro-story-title">OOO님의 사연</h2></div>
+                <Quote className="intro-quote-mark" size={42} aria-hidden="true" />
               </div>
-              <h2 className="text-[1.1rem] font-bold text-gray-800 leading-snug mb-2">
-                "사회초년생 원룸 거주중입니다. 깔끔하고 모던한 방을 만들고 싶은데 너무 어려워요 도와주세요!"
-              </h2>
-              <p className="text-gray-500 text-xs leading-relaxed mb-3">
-                자취방을 얻었지만 어떻게 꾸며야 할지 막막한 사회초년생의 사연입니다. 평수를 고르고 가구를 배치해 모던한 방을 완성해 주세요.
-              </p>
-              <div className="space-y-1.5 pt-2 border-t border-gray-100">
-                <div className="flex items-center gap-2 text-xs text-gray-600 font-medium">
-                  <Check size={14} className="text-[#35C5F0] flex-shrink-0" /> 공모전 참여시 100% 포인트 지급
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-600 font-medium">
-                  <Check size={14} className="text-[#35C5F0] flex-shrink-0" /> 1등 상금 500만원 수여 및 커뮤니티 공식 인플루언서 기회 제공
-                </div>
-              </div>
-            </div>
+              <blockquote>
+                첫 독립을 시작한 사회초년생입니다. 작은 원룸을 제 취향대로 꾸며보고 싶은데,
+                어떤 가구를 골라야 할지 아직 막막해요. 예산은 <strong>500만 원 정도</strong>로 생각하고 있어요.
+                깔끔하고 모던하면서도 오래 머물고 싶은 방을 함께 만들어 주세요!
+              </blockquote>
+              <div className="intro-story-tags"><span>사회초년생</span><span>작은 원룸</span><span>예산 약 500만 원</span></div>
+              <button type="button" className="intro-start-button" onClick={() => setStep('editor')}>시작하기 <ChevronRight size={18} strokeWidth={3} /></button>
+              <a className="intro-scroll-link" href="#intro-rewards">시상 내역과 응모 방법 보기 <span aria-hidden="true">↓</span></a>
+            </section>
 
-            {/* 참여하기 버튼 */}
-            <div className="mt-4 mb-2">
-              <button 
-                onClick={() => setStep('editor')}
-                className="w-full bg-[#35C5F0] hover:bg-[#28AADC] text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2"
-              >
-                참여하기 <ChevronRight size={20} strokeWidth={3} />
-              </button>
-            </div>
+            <div className="intro-scroll-cue" aria-hidden="true"><span />아래로 스크롤해 자세히 확인해 보세요<span /></div>
+
+            <section className="intro-section intro-rewards" id="intro-rewards" aria-labelledby="intro-rewards-title">
+              <div className="intro-section-heading intro-reveal">
+                <p className="intro-eyebrow">A LITTLE MORE REWARD</p>
+                <h2 id="intro-rewards-title">참여하면 이런 혜택이 있어요</h2>
+                <p>멋진 방을 완성한 분께 특별한 기회를 드립니다.</p>
+              </div>
+              <div className="intro-reward-grid">
+                <article className="intro-reward-card intro-reveal" style={{ '--intro-delay': '0ms' }}>
+                  <div className="intro-reward-icon trophy" aria-hidden="true">
+                    <svg viewBox="0 0 64 64"><path d="M20 9h24v11c0 11-5 17-12 17s-12-6-12-17V9Z"/><path d="M20 14H9v5c0 9 5 13 14 13M44 14h11v5c0 9-5 13-14 13M32 37v11m-10 7h20M25 48h14v7H25Z"/><path className="star" d="m32 15 2 4 4 .6-3 3 .7 4-3.7-2-3.7 2 .7-4-3-3 4-.6 2-4Z"/></svg>
+                  </div>
+                  <div><span className="intro-reward-index">AWARD 01</span><h3>총 500만 원의 시상금</h3><p>수상작에는 상금과 함께 <b>오늘의집 어워드 상패</b>를 드립니다.</p></div>
+                </article>
+                <article className="intro-reward-card intro-reveal" style={{ '--intro-delay': '90ms' }}>
+                  <div className="intro-reward-icon badge" aria-hidden="true">
+                    <svg viewBox="0 0 64 64"><path d="m18 40-2 17 16-8 16 8-2-17"/><path d="M32 6 38 9l7-1 3 7 6 4-2 7 2 7-6 4-3 7-7-1-6 3-6-3-7 1-3-7-6-4 2-7-2-7 6-4 3-7 7 1 6-3Z"/><path className="check" d="m23 26 6 6 13-13"/></svg>
+                  </div>
+                  <div><span className="intro-reward-index">AWARD 02</span><h3>공식 인플루언서 기회</h3><p>커뮤니티 공식 인증 배지를 드려요. 더 많은 사람과 소통하고 게시물 우선 노출 혜택도 누릴 수 있어요.</p></div>
+                </article>
+                <article className="intro-reward-card intro-reveal" style={{ '--intro-delay': '180ms' }}>
+                  <div className="intro-reward-icon showroom" aria-hidden="true">
+                    <svg viewBox="0 0 64 64"><path d="m8 27 24-18 24 18M13 25v29h38V25M25 54V37h14v17"/><path d="M20 29h6m12 0h6M18 17l14-11 14 11"/><path className="window" d="M17 34h6v7h-6zm24 0h6v7h-6z"/></svg>
+                  </div>
+                  <div><span className="intro-reward-index">AWARD 03</span><h3>북촌 쇼룸에서 만나는 작품</h3><p>수상 작품은 <b>오늘의집 북촌 쇼룸</b>에서 매달 소개될 예정입니다.</p></div>
+                </article>
+                <article className="intro-reward-card intro-reveal" style={{ '--intro-delay': '270ms' }}>
+                  <div className="intro-reward-icon gift" aria-hidden="true">
+                    <svg viewBox="0 0 64 64"><path d="M9 28h46v28H9zM6 20h52v10H6zM32 20v36"/><path d="M32 20c-2-11-17-16-19-7-2 8 12 9 19 7Zm0 0c2-11 17-16 19-7 2 8-12 9-19 7Z"/></svg>
+                  </div>
+                  <div><span className="intro-reward-index">AWARD 04</span><h3>참여자 전원 쿠폰과 경품</h3><p>수상하지 못해도 참여만으로 할인 쿠폰과 기프티콘 등 선물을 드릴 예정이에요.</p></div>
+                </article>
+              </div>
+              <p className="intro-footnote intro-reveal">※ 시상 및 혜택의 세부 내용은 공모전 운영 상황에 따라 달라질 수 있습니다.</p>
+            </section>
+
+            <section className="intro-section intro-entry" aria-labelledby="intro-entry-title">
+              <div className="intro-section-heading intro-reveal">
+                <p className="intro-eyebrow">HOW TO JOIN</p>
+                <h2 id="intro-entry-title">응모 방법</h2>
+                <p>두 가지 미션을 완료하고 나만의 공간을 공유해 주세요.</p>
+              </div>
+              <div className="intro-step-grid">
+                <article className="intro-step-card intro-reveal" style={{ '--intro-delay': '0ms' }}>
+                  <div className="intro-step-heading"><span>1</span><div><small>FOLLOW US</small><h3>인스타그램과 유튜브 팔로우</h3></div></div>
+                  <p>오늘의집 공식 <b>인스타그램</b>과 <b>유튜브</b>를 모두 팔로우해 주세요.</p>
+                  <figure className="intro-follow-figure">
+                    <img src={"data:image/jpeg;base64," + instagramFollowBase64.trim()} alt="오늘의집 인스타그램 프로필과 팔로우 버튼 참고 이미지" />
+                    <figcaption>인스타그램 팔로우 화면 예시</figcaption>
+                  </figure>
+                </article>
+                <article className="intro-step-card intro-reveal" style={{ '--intro-delay': '100ms' }}>
+                  <div className="intro-step-heading"><span>2</span><div><small>SHARE YOUR ROOM</small><h3>해시태그와 함께 게시물 올리기</h3></div></div>
+                  <p>완성한 방과 사연을 인스타그램 게시물로 올리고, 아래 해시태그를 달아 주세요.</p>
+                  <div className="intro-hashtags"><span>#챌린지이름</span><span>#오늘의집</span></div>
+                  <p className="intro-tag-note">챌린지 이름이 정해지면 <b>#챌린지이름</b>을 실제 해시태그로 바꿔 사용할 수 있어요.</p>
+                  <div className="intro-post-tip"><span aria-hidden="true">✦</span> 꾸미기 전후 사진과 공간에 담긴 이야기를 함께 올려 주세요.</div>
+                </article>
+              </div>
+
+              <section className="intro-judging intro-reveal" aria-labelledby="intro-judging-title">
+                <div className="intro-judging-heading"><div><p className="intro-eyebrow">WINNER SELECTION</p><h3 id="intro-judging-title">평가 방식</h3><p>세 가지 기준을 종합해 수상작을 선정합니다.</p></div><span aria-hidden="true">✳</span></div>
+                <div className="intro-score-grid">
+                  <article><div><b>대중 공감 지수</b><strong>50<small>%</small></strong></div><p>SNS 반응을 모은 <b>좋아요 수</b></p><i style={{ '--score': '50%' }} /></article>
+                  <article><div><b>전문가 심사 지수</b><strong>30<small>%</small></strong></div><p>마케팅·콘텐츠 전문가의 <b>완성도와 독창성 평가</b></p><i style={{ '--score': '30%' }} /></article>
+                  <article><div><b>스토리텔링 지수</b><strong>20<small>%</small></strong></div><p>주인공의 마음이 전해지는 <b>사연의 진정성</b></p><i style={{ '--score': '20%' }} /></article>
+                </div>
+              </section>
+
+              <div className="intro-result intro-reveal"><span aria-hidden="true">✓</span><div><b>응모 결과는 오늘의집 앱에서 확인할 수 있어요.</b><p>수상 소식과 공모전 안내도 앱에서 만나보세요.</p></div></div>
+              <div className="intro-store-links intro-reveal">
+                <a href="https://play.google.com/store/apps/details?id=net.bucketplace&amp;hl=ko" target="_blank" rel="noreferrer"><span aria-hidden="true">▶</span> Google Play 다운로드 <b>↗</b></a>
+                <a href="https://apps.apple.com/kr/app/id1008236892" target="_blank" rel="noreferrer"><span aria-hidden="true">●</span> App Store 다운로드 <b>↗</b></a>
+              </div>
+            </section>
+
+            <footer className="intro-footer"><span aria-hidden="true">✦</span><p>당신의 작은 아이디어가 누군가의 새로운 시작이 될 수 있어요.</p><small>대국민 방꾸미기 프로젝트</small></footer>
           </div>
         </div>
       )}
