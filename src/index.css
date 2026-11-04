@@ -102,3 +102,21 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 .plan-canvas { touch-action:none; user-select:none; -webkit-user-select:none; }
 .plan-canvas svg { touch-action:none; }
 [role="dialog"] { position:fixed; overflow-y:auto; }
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell {
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+    border-left: 0;
+    border-right: 0;
+    height: auto;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-shadow: none;
+  }
+  .room-workspace { min-height: clamp(360px, 90vh, 800px); }
+  .room-editor-body { width: 100%; min-width: 0; }
+  .plan-stage { width: auto; height: auto; min-width: 0; flex: 1 1 0%; }
+}
