@@ -180,7 +180,7 @@ export default function App() {
           <div className="intro-content">
             <section className="intro-story-card" aria-labelledby="intro-story-title">
               <div className="intro-story-head">
-                <div className="intro-avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.8 12 4l9 6.8V21H3V10.8Z" fill="currentColor"/><path d="M10 21v-6h4v6" fill="white"/><path d="M6.5 12.5h3v3h-3zm8 0h3v3h-3z" fill="#b8ebf8"/></svg></div>
+                <div className="intro-avatar" aria-hidden="true">🏠</div>
                 <div><p className="intro-eyebrow">오늘의집에 도착한 사연</p><h2 id="intro-story-title">OOO님의 사연</h2></div>
                 <Quote className="intro-quote-mark" size={42} aria-hidden="true" />
               </div>
