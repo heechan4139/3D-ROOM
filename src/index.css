@@ -298,6 +298,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 
 /* Keep the judging sparkle on touch screens; hide it on desktop and restore the gentle preview twinkle. */
 .intro-judging-heading>.intro-judging-sparkle{animation:intro-sparkle-gentle 2.7s ease-in-out infinite}
-@keyframes intro-sparkle-gentle{0%,100%{transform:rotate(-8deg) scale(.93);opacity:.76}50%{transform:rotate(8deg) scale(1.06);opacity:1}}
+@keyframes intro-sparkle-gentle{0%,100%{transform:translateX(-2px) rotate(-16deg) scale(.94);opacity:.76}50%{transform:translateX(2px) rotate(16deg) scale(1.06);opacity:1}}
 @media(hover:hover) and (pointer:fine){.intro-judging-heading>.intro-judging-sparkle{display:none}}
 @media(prefers-reduced-motion:reduce){.intro-judging-heading>.intro-judging-sparkle{animation:none}}
