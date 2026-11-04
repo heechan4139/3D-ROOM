@@ -66,6 +66,8 @@ export function FurnitureShape({ item }) {
 export default function RoomPlan({ room, floorColor, items, selectedId, onSelect, onChange, onDelete, onRotate, exportRef }) {
   const svgRef = useRef(null);
   const drag = useRef(null);
+  const canvasRef = useRef(null);
+  const pan = useRef(null);
   const [zoom, setZoom] = useState(1);
   const { width: w, height: h } = room;
   const { outline, entry } = roomLayout(room);
@@ -77,6 +79,7 @@ export default function RoomPlan({ room, floorColor, items, selectedId, onSelect
   const point = e => new DOMPoint(e.clientX, e.clientY).matrixTransform(svgRef.current.getScreenCTM().inverse());
   const move = e => {
     if (!drag.current) return;
+    e.preventDefault();
     const p = point(e);
     onChange({ ...drag.current.item, x: p.x - drag.current.dx, y: p.y - drag.current.dy });
   };
@@ -84,10 +87,28 @@ export default function RoomPlan({ room, floorColor, items, selectedId, onSelect
     drag.current = null;
     if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
   };
+  const startCanvasPointer = e => {
+    if (e.target.closest?.('[data-furniture]')) return;
+    onSelect(null);
+    if (zoom <= 1 || (e.pointerType !== 'touch' && e.pointerType !== 'pen')) return;
+    e.preventDefault();
+    pan.current = { x: e.clientX, y: e.clientY, scrollLeft: e.currentTarget.scrollLeft, scrollTop: e.currentTarget.scrollTop };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const moveCanvas = e => {
+    if (!pan.current || !canvasRef.current) return;
+    e.preventDefault();
+    canvasRef.current.scrollLeft = pan.current.scrollLeft - (e.clientX - pan.current.x);
+    canvasRef.current.scrollTop = pan.current.scrollTop - (e.clientY - pan.current.y);
+  };
+  const finishCanvas = e => {
+    pan.current = null;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+  };
   return <section className="plan-stage" aria-label="2D 방꾸미기">
     <div className="plan-caption"><span>MY ROOM <b>· {room.type}형 · 2D</b></span><span>화장실 포함 · 가구 실측 비율</span></div>
     <div className="zoom-controls" role="group" aria-label="화면 확대 축소"><button aria-label="축소" disabled={zoom <= 1} onClick={() => setZoom(z => Math.max(1, z - .25))}>−</button><button aria-label="화면 맞춤" onClick={() => setZoom(1)}>{Math.round(zoom * 100)}%</button><button aria-label="확대" disabled={zoom >= 3} onClick={() => setZoom(z => Math.min(3, z + .25))}>＋</button></div>
-    <div className="plan-canvas" onPointerDown={() => onSelect(null)}>
+    <div ref={canvasRef} className="plan-canvas" onPointerDown={startCanvasPointer} onPointerMove={moveCanvas} onPointerUp={finishCanvas} onPointerCancel={finishCanvas} onLostPointerCapture={() => { pan.current = null; }}>
       <div className="plan-zoom-content" style={{width: `${zoom * 100}%`, height: `${zoom * 100}%`}}>
       <svg ref={node => { svgRef.current = node; if (exportRef) exportRef.current = node; }} viewBox={`-24 -24 ${w + (room.type === 'B' ? 105 : 48)} ${h + 70}`} aria-label="주방과 화장실이 있는 원룸 평면도" onPointerMove={move} onPointerUp={finish} onPointerCancel={finish} onLostPointerCapture={() => { drag.current = null; }}>
         <defs>
@@ -113,7 +134,7 @@ export default function RoomPlan({ room, floorColor, items, selectedId, onSelect
           const bounds = footprint(item);
           return <g key={item.uid} data-furniture={item.id} data-rotation={item.rotation} role="button" tabIndex={0} aria-label={`${item.name}, ${item.rotation}도, 방향키로 이동`} aria-pressed={active}
             transform={`translate(${item.x} ${item.y})`} style={{ cursor: 'grab', touchAction: 'none', outline: 'none' }}
-            onPointerDown={e => { e.stopPropagation(); onSelect(item.uid); const p = point(e); drag.current = { item, dx: p.x - item.x, dy: p.y - item.y }; svgRef.current.setPointerCapture(e.pointerId); }}
+            onPointerDown={e => { e.preventDefault(); e.stopPropagation(); onSelect(item.uid); const p = point(e); drag.current = { item, dx: p.x - item.x, dy: p.y - item.y }; svgRef.current.setPointerCapture(e.pointerId); }}
             onFocus={() => onSelect(item.uid)}
             onKeyDown={e => {
               if (e.key === 'Escape') { onSelect(null); e.currentTarget.blur(); }
