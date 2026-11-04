@@ -70,5 +70,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 .furniture-panel { height:220px; }
 @media (max-height:740px) { .furniture-panel { height:215px; } }
 
-.plan-canvas svg { touch-action:pan-x pan-y; }
+.plan-canvas { touch-action:none; user-select:none; -webkit-user-select:none; }
+.plan-canvas svg { touch-action:none; }
 [role="dialog"] { position:fixed; overflow-y:auto; }
