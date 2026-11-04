@@ -1,102 +1,26 @@
-import React, { useState, useRef } from 'react';
-import { 
-  BedDouble, Armchair, Monitor, Lamp, Square, 
-  ChevronLeft, Lock, Download, Quote, Check, Plus, Box, X, Table, Bed, Layers, ChevronRight
-} from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import RoomPlan, { FurnitureShape } from './RoomPlan';
+import { CATALOG_ITEMS, roomDimensions, constrainItem, defaultAppliances } from './roomGeometry';
+import { ChevronLeft, Lock, Download, Quote, Check, Plus, Box, ChevronRight } from 'lucide-react';
 
 import entryQuestionBase64 from './assets/entry-question.b64?raw';
 import instagramFollowBase64 from './assets/instagram-follow.b64?raw';
 
-// --- 가구 아이콘 렌더링 헬퍼 ---
-const renderIcon = (id, size = 24, className = "text-gray-700") => {
-  switch (id) {
-    case 'bed': return <BedDouble size={size} className={className} />;
-    case 'sofa': return <Armchair size={size} className={className} />;
-    case 'desk': return <Table size={size} className={className} />;
-    case 'lamp': return <Lamp size={size} className={className} />;
-    case 'rug': return <Square size={size} className={className} />;
-    case 'luxury_rug': return <Layers size={size} className={className} />;
-    case 'omons_bed': return <Bed size={size} className={className} />;
-    default: return <Box size={size} className={className} />;
-  }
-};
-
-// --- 가구 카탈로그 데이터 ---
-const CATALOG_ITEMS = [
-  { id: 'bed', name: '포근한 수납 침대', width: 80, height: 110, isLocked: false, color: 'bg-blue-100' },
-  { id: 'sofa', name: '3인용 패브릭 소파', width: 100, height: 60, isLocked: false, color: 'bg-orange-100' },
-  { id: 'desk', name: '깔끔한 화이트 책상', width: 90, height: 50, isLocked: false, color: 'bg-gray-100' },
-  { id: 'lamp', name: '무드 스탠드 조명', width: 45, height: 45, isLocked: false, color: 'bg-yellow-100' },
-  { id: 'rug', name: '포근한 사각 러그', width: 110, height: 110, isLocked: false, color: 'bg-green-100' },
-  { id: 'luxury_rug', name: '고급진 러그', width: 120, height: 120, isLocked: true, color: 'bg-purple-100' },
-  { id: 'omons_bed', name: 'O몬스 침대', width: 85, height: 115, isLocked: true, color: 'bg-red-100' },
-];
-
-// --- 드래그 가능한 가구 아이콘 컴포넌트 ---
-const DraggableItem = ({ item, onUpdatePosition, onDelete }) => {
-  const [position, setPosition] = useState({ x: item.x, y: item.y });
-  const isDragging = useRef(false);
-  const lastPointer = useRef({ x: 0, y: 0 });
-
-  const handlePointerDown = (e) => {
-    e.target.setPointerCapture(e.pointerId);
-    isDragging.current = true;
-    lastPointer.current = { x: e.clientX, y: e.clientY };
-  };
-
-  const handlePointerMove = (e) => {
-    if (!isDragging.current) return;
-    const dx = e.clientX - lastPointer.current.x;
-    const dy = e.clientY - lastPointer.current.y;
-    
-    lastPointer.current = { x: e.clientX, y: e.clientY };
-    setPosition((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
-  };
-
-  const handlePointerUp = (e) => {
-    e.target.releasePointerCapture(e.pointerId);
-    isDragging.current = false;
-    onUpdatePosition(item.uid, position.x, position.y);
-  };
-
-  const handleDelete = (e) => {
-    e.stopPropagation();
-    onDelete(item.uid);
-  };
-
-  return (
-    <div
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
-      className={`absolute shadow-sm flex items-center justify-center cursor-grab active:cursor-grabbing select-none transition-shadow hover:shadow-xl pointer-events-auto ${item.color || 'bg-white'} rounded-md border border-gray-300`}
-      style={{
-        width: item.width,
-        height: item.height,
-        left: position.x,
-        top: position.y,
-        touchAction: 'none',
-        zIndex: isDragging.current ? 50 : 10,
-      }}
-    >
-      <button 
-        onPointerDown={handleDelete}
-        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 shadow-sm hover:bg-red-600 transition-colors z-20"
-      >
-        <X size={16} strokeWidth={3} />
-      </button>
-
-      {renderIcon(item.id, Math.min(item.width, item.height) * 0.5, "text-gray-600 opacity-70")}
-    </div>
-  );
-};
-
 export default function App() {
   const [step, setStep] = useState('intro');
   const [roomSize, setRoomSize] = useState(7);
+  const [roomType, setRoomType] = useState('A');
+  const [floorColor, setFloorColor] = useState('wood');
   const [viewMode, setViewMode] = useState('2d');
-  const [placedItems, setPlacedItems] = useState([]);
+  const [placedItems, setPlacedItems] = useState(() => defaultAppliances(roomDimensions(7, 'A')));
+  const [selectedId, setSelectedId] = useState(null);
+  const dialogRef = useRef(null);
+  const exportRef = useRef(null);
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState('');
+  const furnitureListRef = useRef(null);
+  const [furnitureScroll, setFurnitureScroll] = useState(0);
+  const roomDim = roomDimensions(roomSize, roomType);
   const [modalState, setModalState] = useState({ isOpen: false, type: '' });
 
   const handleAddToRoom = (catalogItem) => {
@@ -105,42 +29,88 @@ export default function App() {
       return;
     }
 
-    const newItem = {
-      ...catalogItem,
-      uid: Date.now() + Math.random(),
-      x: window.innerWidth > 640 ? 160 + Math.random() * 40 : window.innerWidth / 2 - 40 + Math.random() * 20,
-      y: 200 + Math.random() * 40,
-    };
-    setPlacedItems([...placedItems, newItem]);
+    const newItem = constrainItem({
+      ...catalogItem, uid: crypto.randomUUID(), rotation: 0,
+      x: roomDim.width / 2 + (placedItems.length % 3) * 12,
+      y: roomDim.height * .62 + (placedItems.length % 3) * 12,
+    }, roomDim, placedItems);
+    if (!newItem) { setNotice('배치할 공간이 부족해요. 가구를 옮기거나 삭제해 주세요.'); return; }
+    setNotice('');
+    setPlacedItems(items => [...items, newItem]);
+    setSelectedId(null);
   };
 
-  const updateItemPosition = (uid, x, y) => {
-    setPlacedItems(items => 
-      items.map(item => item.uid === uid ? { ...item, x, y } : item)
-    );
+  const updateItem = updated => setPlacedItems(items => {
+    const next = constrainItem(updated, roomDim, items);
+    return next ? items.map(item => item.uid === next.uid ? next : item) : items;
+  });
+  const rotateItem = uid => setPlacedItems(items => items.map(item => item.uid === uid ? (constrainItem({ ...item, rotation: (item.rotation + 90) % 360 }, roomDim, items) || item) : item));
+  const handleDeleteItem = uid => {
+    setPlacedItems(items => items.filter(item => item.uid !== uid || item.protected));
+    setSelectedId(null);
+  };
+  const changeRoomSize = (size, type = roomType) => {
+    const nextRoom = roomDimensions(size, type);
+    const defaults = defaultAppliances(nextRoom);
+    const nextItems = [];
+    for (const item of [...placedItems].sort((a, b) => Number(Boolean(b.protected)) - Number(Boolean(a.protected)))) {
+      const initial = type !== roomType && item.protected ? defaults.find(entry => entry.uid === item.uid) : { ...item, x: item.x * nextRoom.width / roomDim.width, y: item.y * nextRoom.height / roomDim.height };
+      const next = constrainItem(initial, nextRoom, nextItems);
+      if (!next) { setNotice('선택한 방에 모든 가구를 배치할 수 없어요. 가구를 줄인 후 다시 선택해 주세요.'); return; }
+      nextItems.push(next);
+    }
+    setNotice('');
+    setPlacedItems(nextItems);
+    setRoomSize(size);
+    setRoomType(type);
   };
 
-  const handleDeleteItem = (uid) => {
-    setPlacedItems(items => items.filter(item => item.uid !== uid));
+  const saveRoom = async () => {
+    if (!exportRef.current || saving) return;
+    setSaving(true);
+    setNotice('');
+    let sourceUrl;
+    try {
+      const svg = exportRef.current.cloneNode(true);
+      svg.querySelectorAll('[data-selection]').forEach(node => node.remove());
+      svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      const box = exportRef.current.viewBox.baseVal;
+      const width = 2000, height = Math.round(width * box.height / box.width);
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
+      sourceUrl = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], {type: 'image/svg+xml;charset=utf-8'}));
+      const image = new Image();
+      await new Promise((resolve, reject) => { image.onload = resolve; image.onerror = reject; image.src = sourceUrl; });
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const context = canvas.getContext('2d');
+      context.fillStyle = '#f0f3f4'; context.fillRect(0, 0, width, height);
+      context.drawImage(image, 0, 0, width, height);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error('Image export failed');
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url; link.download = `내가-꾸민-방-${roomType}형-${roomSize}평.png`;
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      setNotice('방 이미지를 PNG 파일로 저장했어요.');
+    } catch { setNotice('이미지 저장에 실패했어요. 다시 시도해 주세요.'); }
+    finally { if (sourceUrl) URL.revokeObjectURL(sourceUrl); setSaving(false); }
   };
 
   const triggerAppModal = (type) => {
     setModalState({ isOpen: true, type });
   };
 
-  const getRoomDimensions = (size) => {
-    switch(size) {
-      case 5: return { width: 200, height: 200 };
-      case 7: return { width: 260, height: 260 };
-      case 10: return { width: 320, height: 320 };
-      default: return { width: 260, height: 260 };
-    }
-  };
-
-  const roomDim = getRoomDimensions(roomSize);
+  useEffect(() => {
+    if (!modalState.isOpen) return;
+    const previous = document.activeElement;
+    dialogRef.current?.focus();
+    return () => previous?.focus();
+  }, [modalState.isOpen]);
 
   return (
-    <div className="flex flex-col h-screen w-full bg-gray-100 text-gray-900 font-sans overflow-hidden sm:max-w-md sm:mx-auto sm:border-x sm:border-gray-200 relative shadow-2xl pb-5">
+    <div className="app-shell flex flex-col w-full bg-gray-100 text-gray-900 font-sans overflow-hidden sm:max-w-md sm:mx-auto sm:border-x sm:border-gray-200 relative shadow-2xl pb-5">
       
       <style>{`
         @keyframes float {
@@ -240,20 +210,22 @@ export default function App() {
                   </span>
                   응모방법
                 </button>
-                <button 
-                  onClick={() => setStep('success')}
+                <button
+                  onClick={saveRoom} disabled={saving}
                   className="text-white font-bold text-xs px-3 py-1.5 bg-[#35C5F0] rounded-lg shadow-sm hover:bg-[#28AADC] transition-colors"
                 >
-                  응모
+                  {saving ? '저장 중…' : '저장'}
                 </button>
               </div>
             </div>
 
-            <div className="flex justify-center gap-2">
+            <div className="room-options-row">
+              <span className="option-label">평수</span>
               {[5, 7, 10].map((size) => (
                 <button
                   key={size}
-                  onClick={() => setRoomSize(size)}
+                  aria-pressed={roomSize === size}
+                  onClick={() => changeRoomSize(size)}
                   className={`px-4 py-1.5 text-xs font-bold rounded-full transition-all border ${
                     roomSize === size 
                       ? 'border-[#35C5F0] bg-blue-50 text-[#35C5F0]' 
@@ -263,40 +235,19 @@ export default function App() {
                   {size}평
                 </button>
               ))}
+              <div className="room-type-options" role="group" aria-label="방 구조 선택">
+                {['A', 'B'].map(type => <button key={type} aria-pressed={roomType === type} onClick={() => changeRoomSize(roomSize, type)}>{type}형</button>)}
+              </div>
+            </div>
+            <div className="room-options-row floor-options" role="group" aria-label="바닥 색 선택">
+              <span className="option-label">바닥</span>
+              {[['wood', '우드'], ['black', '검정'], ['white', '흰색']].map(([value, label]) => <button key={value} aria-pressed={floorColor === value} aria-label={`${label} 바닥`} onClick={() => setFloorColor(value)}><span className={`floor-swatch floor-${value}`} />{label}</button>)}
+              <button className="story-button" onClick={() => triggerAppModal('story')}>사연보기</button>
             </div>
           </header>
 
-          <div className="flex-1 relative overflow-hidden flex items-center justify-center">
-            <div 
-              className="bg-white border-2 border-gray-300 shadow-inner relative transition-all duration-500 ease-out"
-              style={{
-                width: roomDim.width,
-                height: roomDim.height,
-                backgroundImage: 'linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px)',
-                backgroundSize: '20px 20px'
-              }}
-            >
-              <div className="absolute bottom-0 right-4 w-12 h-2 bg-blue-200 border border-blue-400 rounded-t-full flex items-center justify-center">
-                <span className="text-[8px] text-blue-800 font-bold">문</span>
-              </div>
-            </div>
-
-            <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">
-              {placedItems.length === 0 && (
-                <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-full text-xs font-medium shadow-md backdrop-blur-sm whitespace-nowrap">
-                  하단에서 가구를 추가해보세요
-                </div>
-              )}
-              {placedItems.map(item => (
-                <DraggableItem 
-                  key={item.uid} 
-                  item={item} 
-                  onUpdatePosition={updateItemPosition} 
-                  onDelete={handleDeleteItem}
-                />
-              ))}
-            </div>
-          </div>
+          {notice && <p className="editor-notice" role="status">{notice}</p>}
+          <RoomPlan exportRef={exportRef} room={roomDim} floorColor={floorColor} items={placedItems} selectedId={selectedId} onSelect={setSelectedId} onChange={updateItem} onDelete={handleDeleteItem} onRotate={rotateItem} />
 
           <div 
             className="bg-[#FF6B6B] text-white text-xs font-bold py-2.5 px-4 text-center cursor-pointer flex items-center justify-center gap-2 z-30 shadow-md hover:bg-[#fa5a5a] transition-colors"
@@ -306,19 +257,25 @@ export default function App() {
             선택한 가구들 오늘의 집에서 최대 30% 할인중!
           </div>
 
-          <div className="h-60 bg-white border-t border-gray-200 flex flex-col z-30 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+          <div className="furniture-panel bg-white border-t border-gray-200 flex flex-col z-30 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
             <div className="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
-              <span className="font-bold text-gray-800 text-sm">배치 가능 가구</span>
-              <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-1 rounded-md">좌우 스와이프</span>
+              <span className="font-bold text-gray-800 text-sm">가구 추가</span>
+
             </div>
             
-            <div className="flex-1 overflow-x-auto overflow-y-hidden flex items-center gap-3 px-4 scrollbar-hide py-2">
+            <div ref={furnitureListRef}
+              onScroll={e => {
+                const list = e.currentTarget;
+                const max = list.scrollWidth - list.clientWidth;
+                setFurnitureScroll(max > 0 ? list.scrollLeft / max * 100 : 0);
+              }}
+              className="furniture-list flex-1 min-h-0 overflow-x-auto overflow-y-hidden flex items-center gap-3 px-4 py-2">
               {CATALOG_ITEMS.map((item) => {
                 return (
                   <div key={item.id} className="flex-shrink-0 w-32 bg-white rounded-xl border border-gray-100 shadow-sm p-3 flex flex-col h-full justify-between">
                     <div className="flex flex-col items-center mb-1">
                       <div className={`w-16 h-16 rounded-lg ${item.color || 'bg-gray-50'} mb-2 relative overflow-hidden flex items-center justify-center border border-gray-200`}>
-                         {renderIcon(item.id, 28, "text-gray-700")}
+                         <svg viewBox={`-8 -8 ${item.width + 16} ${item.height + 16}`} className="w-14 h-14" aria-hidden="true"><FurnitureShape item={item} /></svg>
                          {item.isLocked && (
                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
                              <Lock size={20} className="text-white drop-shadow-md" />
@@ -326,69 +283,60 @@ export default function App() {
                          )}
                       </div>
 
-                      <span className="text-[11px] font-bold text-gray-700 text-center line-clamp-2 h-8">
+                      <span className="text-[11px] font-bold text-gray-700 text-center line-clamp-2 h-5">
                         {item.name}
                       </span>
+                      <span className="text-[9px] text-gray-400">{item.width} × {item.height} cm</span>
                     </div>
                     
                     <div className="flex flex-col gap-1.5 mt-auto">
                       <button 
                         onClick={() => handleAddToRoom(item)}
+                        aria-label={`${item.name} ${item.isLocked ? '앱에서 확인' : '배치하기'}`}
                         className={`w-full text-white text-[11px] font-bold py-2 rounded-md flex items-center justify-center gap-1 active:scale-95 transition-transform ${item.isLocked ? 'bg-gray-400 hover:bg-gray-500' : 'bg-gray-800 hover:bg-gray-700'}`}
                       >
                         {item.isLocked ? <><Lock size={12} /> 앱에서 확인</> : <><Plus size={12} /> 배치하기</>}
                       </button>
                       
-                      <button 
-                        onClick={() => triggerAppModal('price')}
-                        className="w-full bg-blue-50 text-[#35C5F0] text-[11px] font-bold py-2 rounded-md flex items-center justify-center gap-1 hover:bg-blue-100 active:scale-95 transition-transform"
-                      >
-                        <Lock size={12} /> 앱에서 가격 보기
-                      </button>
+
                     </div>
                   </div>
                 );
               })}
+              <button onClick={() => triggerAppModal('more')} className="more-furniture flex-shrink-0 w-36 h-full rounded-xl flex flex-col items-center justify-center gap-3 px-3">
+                <span className="rounded-full bg-white p-3"><Plus size={24} /></span>
+                <b className="text-xs">더 다양한 가구 추가</b>
+                <span className="text-[10px] text-gray-500">오늘의집 앱에서 만나보세요</span>
+              </button>
+            </div>
+            <div className="furniture-scroll-control">
+              <span aria-hidden="true">‹</span>
+              <input type="range" min="0" max="100" step="0.1" value={furnitureScroll}
+                aria-label="가구 목록 좌우 스크롤"
+                onChange={e => {
+                  const value = Number(e.target.value);
+                  setFurnitureScroll(value);
+                  const list = furnitureListRef.current;
+                  if (list) list.scrollLeft = (list.scrollWidth - list.clientWidth) * value / 100;
+                }} />
+              <span aria-hidden="true">›</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* 3. SUCCESS SCREEN */}
-      {step === 'success' && (
-        <div className="flex flex-col h-full bg-white items-center justify-center p-6 animate-in zoom-in-95 duration-500">
-          <div className="w-24 h-24 bg-blue-50 text-[#35C5F0] rounded-full flex items-center justify-center mb-6 shadow-inner">
-            <Check size={48} strokeWidth={3} />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">응모가 완료되었습니다!</h2>
-          <p className="text-gray-500 text-center mb-10 leading-relaxed text-sm">
-            소중한 인테리어 아이디어를 제출해주셔서 감사합니다.<br/>
-            응모 투표 및 상세 결과는 <span className="font-bold text-gray-800">오늘의집 앱</span>에서<br/>
-            확인하실 수 있습니다.
-          </p>
-          
-          <button 
-            onClick={() => alert("앱 스토어로 이동하는 기능입니다.")}
-            className="w-full max-w-xs bg-[#35C5F0] hover:bg-[#28AADC] text-white font-bold text-lg py-4 rounded-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2 mb-3"
-          >
-            <Download size={20} /> 앱에서 결과 확인하기
-          </button>
-          
-          <button 
-            onClick={() => {
-              setStep('intro');
-              setPlacedItems([]);
-            }}
-            className="text-gray-400 hover:text-gray-600 font-medium text-sm py-2 mt-2"
-          >
-            처음으로 돌아가기
-          </button>
-        </div>
-      )}
-
       {/* 4. MODAL */}
       {modalState.isOpen && modalState.type !== 'entry' && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-5 transition-opacity">
+        <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="app-modal-title" tabIndex={-1}
+          onKeyDown={e => {
+            if (e.key === 'Escape') setModalState({ isOpen: false, type: '' });
+            if (e.key === 'Tab') {
+              const controls = [...e.currentTarget.querySelectorAll('button, a[href]')];
+              const first = controls[0], last = controls[controls.length - 1];
+              if (e.shiftKey && (document.activeElement === first || document.activeElement === e.currentTarget)) { e.preventDefault(); last.focus(); }
+              else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+            }
+          }} className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-5 transition-opacity">
           <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="bg-[#35C5F0] p-6 text-center text-white relative">
               <button 
@@ -398,32 +346,40 @@ export default function App() {
                 ✕
               </button>
               <div className="w-16 h-16 bg-white text-[#35C5F0] rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
-                {modalState.type === '3d' ? <Box size={32} /> : <Lock size={32} />}
+                {modalState.type === 'story' ? <Quote size={32} /> : modalState.type === '3d' ? <Box size={32} /> : <Lock size={32} />}
               </div>
-              <h3 className="text-xl font-bold">
-                {modalState.type === '3d' ? '3D 뷰는 앱에서 지원해요!' : 
-                 modalState.type === 'premium' ? '프리미엄 가구는 앱에서!' :
+              <h3 id="app-modal-title" className="text-xl font-bold">
+                {modalState.type === 'story' ? 'OOO님의 사연' : modalState.type === '3d' ? '3D 뷰는 앱에서 지원해요!' : 
+                 modalState.type === 'more' ? '더 다양한 가구를 만나보세요!' :
+                 modalState.type === 'premium' ? '오늘의 p!ck은 앱에서!' :
                  '가격 및 정보는 앱에서 확인!'}
               </h3>
             </div>
             
             <div className="p-6 text-center">
-              <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+              {modalState.type === 'story' ? <div className="story-content">
+                <p>“사회초년생 원룸 거주중입니다. 깔끔하고 모던한 방을 만들고 싶은데 너무 어려워요. 도와주세요!”</p>
+                <h4>방 꾸미기 조건</h4>
+                <ul><li>선택한 {roomSize}평 · {roomType}형 안에서 깔끔하고 모던하게 꾸며 주세요.</li><li>냉장고와 세탁기는 유지하되 위치와 방향을 바꿀 수 있어요.</li><li>주방·화장실·현관을 비우고, 러그 외 가구는 겹치지 않게 배치해 주세요.</li><li>완성한 방은 저장 버튼으로 이미지로 간직하세요.</li></ul>
+                <button className="story-close" onClick={() => setModalState({isOpen:false,type:''})}>방 꾸미기 계속하기</button>
+              </div> : <>
+
+              <p className="text-gray-600 text-sm mb-6 leading-relaxed whitespace-pre-line">
                 {modalState.type === '3d' 
                   ? '더욱 실감나는 3D 인테리어 뷰와 AR 배치는\n오늘의집 앱에서 완벽하게 지원합니다!' 
-                  : modalState.type === 'premium'
-                  ? '웹 프로토타입에서 제공되는 기본 가구 외에\n더 다양한 프리미엄 가구를 추가하려면\n앱을 다운로드해주세요.'
+                  : (modalState.type === 'premium' || modalState.type === 'more')
+                  ? '나에게 꼭 맞는 가구부터 오늘의 p!ck까지,\n더 다양한 가구로 방을 완성해 보세요.\n앱을 다운로드해주세요.'
                   : '선택하신 가구의 실제 가격, 할인 혜택 및\n상세 정보는 앱에서 확인 가능합니다.'}
                 <br/><br/>
                 <span className="font-bold text-gray-900">앱을 설치하고 공모전에 응모해보세요!</span>
               </p>
               
-              <button 
-                onClick={() => setModalState({ isOpen: false, type: '' })}
+              <a href="https://play.google.com/store/apps/details?id=net.bucketplace&gl=KR" target="_blank" rel="noreferrer"
                 className="w-full py-3.5 rounded-xl font-bold text-white bg-[#35C5F0] hover:bg-[#28AADC] flex justify-center items-center gap-2 shadow-md active:scale-95 transition-transform"
               >
-                <Download size={18} /> 앱 다운로드 및 응모하기
-              </button>
+                <Download size={18} /> Google Play에서 다운로드
+              </a>
+              <a href="https://apps.apple.com/kr/app/id1008236892" target="_blank" rel="noreferrer" className="block mt-3 text-sm font-bold text-sky-600">App Store에서 다운로드</a>
               
               <button 
                 onClick={() => setModalState({ isOpen: false, type: '' })}
@@ -431,25 +387,37 @@ export default function App() {
               >
                 나중에 하기
               </button>
+              </>}
             </div>
           </div>
         </div>
       )}
       {modalState.isOpen && modalState.type === 'entry' && (
-        <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="entry-guide-title"
-            className="relative w-full max-w-sm max-h-[92vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
-          >
+        <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="entry-guide-title"
+          tabIndex={-1}
+          onKeyDown={e => {
+            if (e.key === 'Escape') setModalState({ isOpen: false, type: '' });
+            if (e.key === 'Tab') {
+              const controls = [...e.currentTarget.querySelectorAll('button, a[href]')];
+              const first = controls[0], last = controls[controls.length - 1];
+              if (e.shiftKey && (document.activeElement === first || document.activeElement === e.currentTarget)) { e.preventDefault(); last.focus(); }
+              else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+            }
+          }}
+          className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+        >
+          <section className="relative w-full max-w-sm max-h-[92vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <header className="flex-shrink-0 bg-[#35C5F0] text-white px-5 py-4">
               <button
                 onClick={() => setModalState({ isOpen: false, type: '' })}
                 className="absolute top-3 right-3 p-1 text-white/80 hover:text-white"
                 aria-label="응모방법 닫기"
               >
-                <X size={20} />
+                ✕
               </button>
               <p className="text-xs font-bold text-white/80 mb-1">오늘의집 공모전</p>
               <h2 id="entry-guide-title" className="text-xl font-extrabold">응모 방법</h2>
