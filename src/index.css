@@ -105,11 +105,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 
 @media (hover: hover) and (pointer: fine) {
   .app-shell {
-    max-width: none;
-    margin-left: 0;
-    margin-right: 0;
-    border-left: 0;
-    border-right: 0;
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
     height: auto;
     min-height: 100dvh;
     overflow-x: hidden;
