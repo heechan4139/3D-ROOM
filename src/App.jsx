@@ -486,7 +486,7 @@ export default function App() {
               {modalState.type === 'story' ? <div className="story-content">
                 <p>“사회초년생 원룸 거주중입니다. 깔끔하고 모던한 방을 만들고 싶은데 너무 어려워요. 도와주세요!”</p>
                 <h4>방 꾸미기 조건</h4>
-                <ul><li>선택한 {roomSize}평 · {roomType}형 안에서 깔끔하고 모던하게 꾸며 주세요.</li><li>인테리어 예산은 500만원이에요.</li><li>채광이 부족해 전체적으로 밝고 화사한 분위기를 원해.</li><li>실제 방은 좁지만 넓어보이게 인테리어 해주세요.</li></ul>
+                <ul><li>선택한 {roomSize}평 · {roomType}형 안에서 깔끔하고 모던하게 꾸며 주세요.</li><li>인테리어 예산은 500만원이에요.</li><li>채광이 부족해 전체적으로 밝고 화사한 분위기를 원해요.</li><li>실제 방은 좁지만 넓어보이게 인테리어 해주세요.</li></ul>
                 <button className="story-close" onClick={() => setModalState({isOpen:false,type:''})}>방 꾸미기 계속하기</button>
               </div> : <>
 
