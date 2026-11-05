@@ -302,10 +302,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 @media(hover:hover) and (pointer:fine){.intro-judging-heading>.intro-judging-sparkle{display:none}}
 @media(prefers-reduced-motion:reduce){.intro-judging-heading>.intro-judging-sparkle{animation:none}}
 
-/* 평가 막대 기본 상태 */
-.intro-score-grid i.intro-score-bar {
-  display: block;
+/* 평가 게이지바 초기 상태 */
+.intro-judging .intro-score-grid i {
   width: 0;
+  display: block;
   height: 5px;
   border-radius: 99px;
   background: linear-gradient(
@@ -315,13 +315,23 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
   );
 }
 
-/* 평가 영역이 화면에 나타났을 때 애니메이션 실행 */
-.intro-judging.is-visible .intro-score-bar {
+/* 평가 영역이 화면에 나타나면 애니메이션 시작 */
+.intro-judging.is-visible .intro-score-grid article:nth-child(1) i {
   animation: score-bar-grow 1.2s
-    cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: var(--bar-delay, 0ms);
+    cubic-bezier(0.22, 1, 0.36, 1) 0ms forwards;
 }
 
+.intro-judging.is-visible .intro-score-grid article:nth-child(2) i {
+  animation: score-bar-grow 1.2s
+    cubic-bezier(0.22, 1, 0.36, 1) 350ms forwards;
+}
+
+.intro-judging.is-visible .intro-score-grid article:nth-child(3) i {
+  animation: score-bar-grow 1.2s
+    cubic-bezier(0.22, 1, 0.36, 1) 700ms forwards;
+}
+
+/* 오른쪽으로 차오르는 모션 */
 @keyframes score-bar-grow {
   from {
     width: 0;
@@ -331,3 +341,4 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
     width: var(--score);
   }
 }
+
