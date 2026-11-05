@@ -301,3 +301,20 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 @keyframes intro-sparkle-gentle{0%,100%{transform:translateX(-2px) rotate(-16deg) scale(.94);opacity:.76}50%{transform:translateX(2px) rotate(16deg) scale(1.06);opacity:1}}
 @media(hover:hover) and (pointer:fine){.intro-judging-heading>.intro-judging-sparkle{display:none}}
 @media(prefers-reduced-motion:reduce){.intro-judging-heading>.intro-judging-sparkle{animation:none}}
+
+.intro-score-grid i.intro-score-bar {
+  width: 0;
+  animation: score-bar-grow 1.2s
+    cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--bar-delay, 0ms);
+}
+
+@keyframes score-bar-grow {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: var(--score);
+  }
+}
