@@ -302,10 +302,23 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 @media(hover:hover) and (pointer:fine){.intro-judging-heading>.intro-judging-sparkle{display:none}}
 @media(prefers-reduced-motion:reduce){.intro-judging-heading>.intro-judging-sparkle{animation:none}}
 
+/* 평가 막대 기본 상태 */
 .intro-score-grid i.intro-score-bar {
+  display: block;
   width: 0;
+  height: 5px;
+  border-radius: 99px;
+  background: linear-gradient(
+    90deg,
+    #ffdc4c,
+    #f3bc18
+  );
+}
+
+/* 평가 영역이 화면에 나타났을 때 애니메이션 실행 */
+.intro-judging.is-visible .intro-score-bar {
   animation: score-bar-grow 1.2s
-    cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: var(--bar-delay, 0ms);
 }
 
