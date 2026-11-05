@@ -181,7 +181,7 @@ export default function App() {
             <section className="intro-story-card" aria-labelledby="intro-story-title">
               <div className="intro-story-head">
                 <div className="intro-avatar" aria-hidden="true"><Home size={23} strokeWidth={2.4} /></div>
-                <div><p className="intro-eyebrow">오늘의집에 도착한 사연</p><h2 id="intro-story-title">OOO님의 사연</h2></div>
+                <div><p className="intro-eyebrow">오늘의집에 도착한 사연</p><h2 id="intro-story-title">정O휘님의 사연</h2></div>
                 <Quote className="intro-quote-mark" size={42} aria-hidden="true" />
               </div>
               <blockquote>
@@ -189,7 +189,7 @@ export default function App() {
                 어떤 가구를 골라야 할지 아직 막막해요. 예산은 <strong>500만 원 정도</strong>로 생각하고 있어요.<br />
                 깔끔하고 모던하면서도 오래 머물고 싶은 방을 함께 만들어 주세요!
               </blockquote>
-              <div className="intro-story-tags"><span>사회초년생</span><span>작은 원룸</span><span>예산 약 500만 원</span></div>
+              <div className="intro-story-tags"><span>사회초년생</span><span>작은 원룸</span><span>모던</span></div>
               <button type="button" className="intro-start-button" onClick={() => setStep('editor')}>시작하기 <ChevronRight size={18} strokeWidth={3} /></button>
               <a className="intro-scroll-link" href="#intro-rewards">시상 내역과 응모 방법 보기 <span aria-hidden="true">↓</span></a>
             </section>
@@ -475,7 +475,7 @@ export default function App() {
                 {modalState.type === 'story' ? <Quote size={32} /> : modalState.type === '3d' ? <Box size={32} /> : <Lock size={32} />}
               </div>
               <h3 id="app-modal-title" className="text-xl font-bold">
-                {modalState.type === 'story' ? 'OOO님의 사연' : modalState.type === '3d' ? '3D 뷰는 앱에서 지원해요!' : 
+                {modalState.type === 'story' ? '정O휘님의 사연' : modalState.type === '3d' ? '3D 뷰는 앱에서 지원해요!' : 
                  modalState.type === 'more' ? '더 다양한 가구를 만나보세요!' :
                  modalState.type === 'premium' ? '오늘의 p!ck은 앱에서!' :
                  '가격 및 정보는 앱에서 확인!'}
@@ -486,7 +486,7 @@ export default function App() {
               {modalState.type === 'story' ? <div className="story-content">
                 <p>“사회초년생 원룸 거주중입니다. 깔끔하고 모던한 방을 만들고 싶은데 너무 어려워요. 도와주세요!”</p>
                 <h4>방 꾸미기 조건</h4>
-                <ul><li>선택한 {roomSize}평 · {roomType}형 안에서 깔끔하고 모던하게 꾸며 주세요.</li><li>냉장고와 세탁기는 유지하되 위치와 방향을 바꿀 수 있어요.</li><li>주방·화장실·현관을 비우고, 러그 외 가구는 겹치지 않게 배치해 주세요.</li><li>완성한 방은 저장 버튼으로 이미지로 간직하세요.</li></ul>
+                <ul><li>선택한 {roomSize}평 · {roomType}형 안에서 깔끔하고 모던하게 꾸며 주세요.</li><li>인테리어 예산은 500만원이에요.</li><li>채광이 부족해 전체적으로 밝고 화사한 분위기를 원해.</li><li>실제 방은 좁지만 넓어보이게 인테리어 해주세요.</li></ul>
                 <button className="story-close" onClick={() => setModalState({isOpen:false,type:''})}>방 꾸미기 계속하기</button>
               </div> : <>
 
