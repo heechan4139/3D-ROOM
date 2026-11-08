@@ -78,6 +78,24 @@ export async function signInAdmin(email, password) {
   return storeSession(session);
 }
 
+export async function requestAdminPasswordRecovery(email) {
+  if (!isUsageStatsConfigured) throw new Error('관리자 통계 저장 설정이 아직 완료되지 않았습니다.');
+  if (email.trim().toLowerCase() !== ADMIN_EMAIL) {
+    throw new Error('등록된 관리자 이메일을 입력해 주세요.');
+  }
+
+  const redirectTo = `${window.location.origin}${window.location.pathname}`;
+  const response = await fetch(`${SUPABASE_URL}/auth/v1/recover?redirect_to=${encodeURIComponent(redirectTo)}`, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email: ADMIN_EMAIL }),
+  });
+  return readResponse(response);
+}
+
 export function signOutAdmin() {
   sessionStorage.removeItem(SESSION_KEY);
 }

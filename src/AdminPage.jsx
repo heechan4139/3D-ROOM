@@ -5,6 +5,7 @@ import {
   getPasswordSetupUser,
   isUsageStatsConfigured,
   loadFurnitureUsage,
+  requestAdminPasswordRecovery,
   resetFurnitureUsage,
   setPasswordFromAuthLink,
   signInAdmin,
@@ -83,6 +84,20 @@ export default function AdminPage() {
       await refreshCounts();
     } catch (err) {
       setError(err.message || '로그인에 실패했습니다.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handlePasswordRecovery = async () => {
+    setBusy(true);
+    setError('');
+    setNotice('');
+    try {
+      await requestAdminPasswordRecovery(email);
+      setNotice('비밀번호 재설정 메일을 요청했습니다. 받은 편지함을 확인해 주세요.');
+    } catch (err) {
+      setError(err.message || '재설정 메일을 요청하지 못했습니다.');
     } finally {
       setBusy(false);
     }
@@ -243,6 +258,9 @@ export default function AdminPage() {
             <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#35C5F0] px-4 py-3 font-bold text-white hover:bg-[#28AADC] disabled:opacity-60">
               {busy ? <LoaderCircle className="animate-spin" size={18} /> : <LockKeyhole size={18} />}
               관리자 로그인
+            </button>
+            <button type="button" onClick={handlePasswordRecovery} disabled={busy} className="w-full py-2 text-sm font-medium text-[#188fb4] hover:underline disabled:opacity-60">
+              관리자 비밀번호 재설정 메일 받기
             </button>
           </form>
         ) : (
