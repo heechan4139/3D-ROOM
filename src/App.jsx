@@ -596,7 +596,7 @@ function RoomApp() {
                       <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">#오늘의방 챌린지</span>
                       <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">#오늘의집</span>
                     </div>
-                    <p className="mt-2 text-[10px] leading-relaxed text-gray-500"
+                    <p className="mt-2 text-[10px] leading-relaxed text-gray-500">해시태그를 모두 입력해야 자동으로 응모돼요.</p>
                   </div>
                 </li>
               </ol>
