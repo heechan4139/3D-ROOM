@@ -170,7 +170,7 @@ export default function AdminPage() {
                 <span className="tabular-nums">{counts.reduce((sum, item) => sum + Number(item.total), 0).toLocaleString()}개</span>
               </div>
             </div>
-            <p className="mt-4 text-xs leading-relaxed text-gray-400">응모 버튼을 누른 시점의 배치 가구가 집계됩니다. 배치하지 않은 가구와 응모 전 배치는 집계되지 않습니다.</p>
+            <p className="mt-4 text-xs leading-relaxed text-gray-400">방 이미지를 저장한 시점의 배치 가구가 집계됩니다. 고정 설비와 배치하지 않은 가구는 집계되지 않습니다.</p>
           </>
         )}
       </section>

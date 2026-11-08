@@ -8,13 +8,17 @@ create table if not exists public.furniture_counts (
 );
 
 insert into public.furniture_counts (item_id, item_name) values
-  ('bed', '포근한 수납 침대'),
-  ('sofa', '3인용 패브릭 소파'),
-  ('desk', '깔끔한 화이트 책상'),
-  ('lamp', '무드 스탠드 조명'),
-  ('rug', '포근한 사각 러그'),
-  ('luxury_rug', '고급진 러그'),
-  ('omons_bed', 'O몬스 침대')
+  ('bed', '침대'),
+  ('desk', '책상'),
+  ('sofa', '1인용 소파'),
+  ('rug', '러그'),
+  ('lamp', '조명'),
+  ('plant', '화분'),
+  ('dresser', '서랍장'),
+  ('bookshelf', '책장'),
+  ('coffee_table', '소파 테이블'),
+  ('omons_bed', '오늘의 p!ck 침대'),
+  ('luxury_rug', '오늘의 p!ck 러그')
 on conflict (item_id) do update set item_name = excluded.item_name;
 
 alter table public.furniture_counts enable row level security;

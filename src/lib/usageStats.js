@@ -86,11 +86,12 @@ async function getValidSession() {
 }
 
 async function restRequest(path, { token, method = 'GET', body } = {}) {
+  const authorizationToken = token || (SUPABASE_ANON_KEY.startsWith('sb_publishable_') ? null : SUPABASE_ANON_KEY);
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     method,
     headers: {
       apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${token || SUPABASE_ANON_KEY}`,
+      ...(authorizationToken ? { Authorization: `Bearer ${authorizationToken}` } : {}),
       'Content-Type': 'application/json',
     },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
