@@ -6,7 +6,7 @@ import { ChevronLeft, Lock, Download, Quote, Check, Plus, Box, ChevronRight, Hom
 import { isUsageStatsConfigured, recordFurnitureUsage } from './lib/usageStats';
 
 import entryQuestionBase64 from './assets/entry-question.b64?raw';
-import instagramFollowBase64 from './assets/instagram-follow.b64?raw';
+import instagramFollowImage from './assets/instagram-follow.png';
 
 export default function App() {
   const isAdminPage = new URLSearchParams(window.location.search).get('admin') === '1';
@@ -260,7 +260,7 @@ function RoomApp() {
                   <div className="intro-step-heading"><span>1</span><div><small>FOLLOW US</small><h3>인스타그램과 유튜브 팔로우</h3></div></div>
                   <p>오늘의집 공식 <b>인스타그램</b>과 <b>유튜브</b>를 모두 팔로우해 주세요.</p>
                   <figure className="intro-follow-figure">
-                    <img src={"data:image/jpeg;base64," + instagramFollowBase64.trim()} alt="오늘의집 인스타그램 프로필과 팔로우 버튼 참고 이미지" />
+                    <img src={instagramFollowImage} alt="오늘의집 인스타그램 프로필과 팔로우 버튼 참고 이미지" />
                     <figcaption>인스타그램 팔로우 화면 예시</figcaption>
                   </figure>
                 </article>
@@ -570,7 +570,7 @@ function RoomApp() {
             <div className="overflow-y-auto p-5">
               <figure className="mb-5">
                 <img
-                  src={"data:image/jpeg;base64," + instagramFollowBase64.trim()}
+                  src={instagramFollowImage}
                   alt="오늘의집 인스타그램 프로필과 팔로우 버튼 예시"
                   className="w-full rounded-xl border border-gray-100 shadow-sm"
                 />
