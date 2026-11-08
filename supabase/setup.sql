@@ -16,9 +16,12 @@ insert into public.furniture_counts (item_id, item_name) values
   ('rug', '러그'),
   ('white_round_rug', '흰색 원형 러그'),
   ('lamp', '조명'),
+  ('floor_lamp', '스탠드 조명'),
   ('plant', '화분'),
   ('dresser', '서랍장'),
+  ('white_wardrobe', '화이트 옷장'),
   ('bookshelf', '책장'),
+  ('white_partition', '흰색 파티션'),
   ('coffee_table', '소파 테이블'),
   ('omons_bed', '오늘의 p!ck 침대'),
   ('luxury_rug', '오늘의 p!ck 러그')

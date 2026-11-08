@@ -18,15 +18,36 @@ export function FurnitureShape({ item }) {
     <path d={`M4 ${h - 7}H${w - 4} M${w / 2} ${h - 7}v6`} stroke="#8c7254" />
     <path d={`M12 ${h - 4}h15 M${w - 27} ${h - 4}h15`} stroke="#695c49" strokeWidth="2" />
   </g>;
+  if (id === 'white_wardrobe') return <g>
+    <rect x="1" y="1" width={w - 2} height={h - 2} rx="4" fill="#fbfbfa" stroke="#aeb3b2" strokeWidth="2" />
+    <rect x="6" y="6" width={w / 2 - 9} height={h - 12} rx="2" fill="#ffffff" stroke="#e1e4e3" />
+    <rect x={w / 2 + 3} y="6" width={w / 2 - 9} height={h - 12} rx="2" fill="#f7f8f7" stroke="#e1e4e3" />
+    <path d={`M${w / 2} 5V${h - 5}`} stroke="#c5c9c8" strokeWidth="2" />
+    <circle cx={w / 2 - 5} cy={h / 2} r="2" fill="#a9aeac" />
+    <circle cx={w / 2 + 5} cy={h / 2} r="2" fill="#a9aeac" />
+  </g>;
   if (id === 'bookshelf') return <g>
     <rect width={w} height={h} rx="2" fill="#a98b67" stroke="#816b51" strokeWidth="2" />
     <rect x="4" y="4" width={w - 8} height={h - 6} fill="#e5d7c0" />
     {['#7e9e9d', '#c7a27e', '#d3c6a7', '#889ba7', '#b2bca0', '#b48170'].map((color, i) => <rect key={color} x={8 + i * 10} y="6" width="8" height={h - 9} fill={color} stroke="#fff" strokeWidth=".5" />)}
   </g>;
+  if (id === 'white_partition') return <g>
+    <rect x="1" y="1" width={w - 2} height={h - 2} rx="3" fill="#fbfbfa" stroke="#aeb3b2" strokeWidth="2" />
+    <path d={`M${w * .22} 4V${h - 4} M${w * .5} 4V${h - 4} M${w * .78} 4V${h - 4}`} stroke="#e1e4e3" strokeWidth="2" />
+    <path d={`M5 ${h / 2}H${w - 5}`} stroke="#ffffff" strokeWidth="2" />
+    <rect x="2" y="2" width="5" height={h - 4} rx="2" fill="#e4e6e5" />
+    <rect x={w - 7} y="2" width="5" height={h - 4} rx="2" fill="#e4e6e5" />
+  </g>;
   if (id === 'coffee_table') return <g>
     <rect x="1" y="1" width={w - 2} height={h - 2} rx="19" fill="#dfc7a2" stroke="#ad906d" strokeWidth="2" />
     <rect x="17" y="12" width="22" height="25" rx="1" fill="#f3ede1" transform="rotate(-8 28 24)" />
     <circle cx="58" cy="27" r="7" fill="#f9f8f0" stroke="#c3ae8c" /><circle cx="58" cy="27" r="4" fill="#8c6650" />
+  </g>;
+  if (id === 'floor_lamp') return <g>
+    <circle cx={w / 2} cy={h / 2} r={w * .41} fill="#fff4d8" stroke="#c4ae82" strokeWidth="2" />
+    <circle cx={w / 2} cy={h / 2} r={w * .29} fill="none" stroke="#e1cd9f" strokeWidth="2" />
+    <circle cx={w / 2} cy={h / 2} r={w * .11} fill="#a88d61" stroke="#806b4c" strokeWidth="2" />
+    <path d={`M${w / 2} 1V${w * .12} M${w / 2} ${h - 1}V${h - w * .12} M1 ${h / 2}H${w * .12} M${w - 1} ${h / 2}H${w - w * .12}`} stroke="#cfb777" strokeWidth="2" strokeLinecap="round" />
   </g>;
   if (id === 'fabric_bed') return <g>
     <rect width={w} height={h} rx="10" fill="#b49a82" stroke="#917860" strokeWidth="3" />
