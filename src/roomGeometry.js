@@ -1,9 +1,12 @@
 // All plan coordinates and furniture dimensions are in centimeters.
 export const CATALOG_ITEMS = [
   { id: 'bed', name: '침대', width: 110, height: 200, isLocked: false },
+  { id: 'fabric_bed', name: '패브릭 침대', width: 110, height: 200, isLocked: false },
   { id: 'desk', name: '책상', width: 120, height: 60, isLocked: false },
   { id: 'sofa', name: '1인용 소파', width: 80, height: 85, isLocked: false },
+  { id: 'beige_bean_bag', name: '베이지 빈백', width: 80, height: 80, isLocked: false },
   { id: 'rug', name: '러그', width: 150, height: 200, isLocked: false },
+  { id: 'white_round_rug', name: '흰색 원형 러그', width: 150, height: 150, isLocked: false },
   { id: 'lamp', name: '조명', width: 35, height: 35, isLocked: false },
   { id: 'plant', name: '화분', width: 45, height: 45, isLocked: false },
   { id: 'dresser', name: '서랍장', width: 80, height: 45, isLocked: false },
@@ -12,6 +15,8 @@ export const CATALOG_ITEMS = [
   { id: 'omons_bed', name: "오늘의 p!ck 침대", width: 150, height: 200, isLocked: true },
   { id: 'luxury_rug', name: "오늘의 p!ck 러그", width: 170, height: 230, isLocked: true },
 ];
+
+export const isRug = item => ['rug', 'luxury_rug', 'white_round_rug'].includes(item.id);
 
 export function roomDimensions(size, type = 'A') {
   const ratio = type === 'B' ? .48 : 1.18;
@@ -55,7 +60,7 @@ export function defaultAppliances(room) {
 }
 
 export function placementObstacles(item, room, peers = []) {
-  return [...roomLayout(room).obstacles, ...peers.filter(peer => peer.uid !== item.uid && !['rug', 'luxury_rug'].includes(peer.id) && !['rug', 'luxury_rug'].includes(item.id)).map(peer => {
+  return [...roomLayout(room).obstacles, ...peers.filter(peer => peer.uid !== item.uid && !isRug(peer) && !isRug(item)).map(peer => {
     const bounds = footprint(peer);
     return { x: peer.x - bounds.width / 2, y: peer.y - bounds.height / 2, ...bounds };
   })];

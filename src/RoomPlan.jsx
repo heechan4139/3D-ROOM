@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { RotateCw, Trash2, Check } from 'lucide-react';
-import { footprint, roomLayout } from './roomGeometry';
+import { footprint, isRug, roomLayout } from './roomGeometry';
 import RoomFixtures, { ApplianceShape } from './RoomFixtures';
 
 export function FurnitureShape({ item }) {
@@ -27,6 +27,26 @@ export function FurnitureShape({ item }) {
     <rect x="1" y="1" width={w - 2} height={h - 2} rx="19" fill="#dfc7a2" stroke="#ad906d" strokeWidth="2" />
     <rect x="17" y="12" width="22" height="25" rx="1" fill="#f3ede1" transform="rotate(-8 28 24)" />
     <circle cx="58" cy="27" r="7" fill="#f9f8f0" stroke="#c3ae8c" /><circle cx="58" cy="27" r="4" fill="#8c6650" />
+  </g>;
+  if (id === 'fabric_bed') return <g>
+    <rect width={w} height={h} rx="10" fill="#b49a82" stroke="#917860" strokeWidth="3" />
+    <rect x="5" y="8" width={w - 10} height={h - 16} rx="9" fill="#f8f5ee" stroke="#ded8cc" strokeWidth="2" />
+    <rect x="11" y="15" width={w - 22} height="38" rx="8" fill="#fffdf8" stroke="#e7e0d5" strokeWidth="2" />
+    <path d={`M8 67 H${w - 8} V${h - 9} Q${w / 2} ${h - 1} 8 ${h - 9} Z`} fill="#d7b7a8" />
+    <path d={`M8 67 H${w - 8} V91 H8 Z`} fill="#c99f8d" />
+    <path d={`M${w / 2} 96 V${h - 12}`} stroke="#ead6cd" strokeWidth="2" />
+    <path d={`M15 60 Q${w / 2} 66 ${w - 15} 60`} fill="none" stroke="#b99585" strokeWidth="2" />
+  </g>;
+  if (id === 'white_round_rug') return <g>
+    <circle cx={w / 2} cy={h / 2} r={w / 2 - 3} fill="#fffefa" stroke="#cfd1cf" strokeWidth="4" />
+    <circle cx={w / 2} cy={h / 2} r={w * .39} fill="none" stroke="#e5e4df" strokeWidth="3" />
+    <circle cx={w / 2} cy={h / 2} r={w * .29} fill="none" stroke="#efede7" strokeWidth="2" />
+    <circle cx={w / 2} cy={h / 2} r={w * .08} fill="#f5f2eb" stroke="#e1ded6" strokeWidth="2" />
+  </g>;
+  if (id === 'beige_bean_bag') return <g>
+    <path d={`M${w * .49} 4 C${w * .7} 5 ${w * .9} ${h * .19} ${w * .92} ${h * .42} C${w * .96} ${h * .65} ${w * .78} ${h * .91} ${w * .53} ${h * .94} C${w * .29} ${h * .98} ${w * .08} ${h * .79} ${w * .07} ${h * .55} C${w * .05} ${h * .31} ${w * .21} ${h * .1} ${w * .39} ${h * .06} Q${w * .45} 4 ${w * .49} 4 Z`} fill="#d8c5a8" stroke="#aa967b" strokeWidth="3" />
+    <path d={`M${w * .19} ${h * .67} Q${w * .48} ${h * .56} ${w * .79} ${h * .66}`} fill="none" stroke="#b9a588" strokeWidth="2" />
+    <path d={`M${w * .43} ${h * .12} Q${w * .57} ${h * .23} ${w * .64} ${h * .38}`} fill="none" stroke="#eee2ce" strokeWidth="3" />
   </g>;
   if (id === 'bed' || id === 'omons_bed') return <g>
     <rect width={w} height={h} rx="5" fill="#9b8066" />
@@ -126,7 +146,7 @@ export default function RoomPlan({ room, floorColor, items, selectedId, onSelect
         </>}
         <rect x={windowX - 4} y={h * .48} width="8" height={h * .27} fill="#d5e8e8" stroke="#a1b9b9" /><path d={`M${windowX} ${h * .48}v${h * .27}`} stroke="#fff" strokeWidth="2" />
         <text x={w / 2} y={h + 27} textAnchor="middle" fill="#919a9d" fontSize="11">{(w / 100).toFixed(2)} m × {(h / 100).toFixed(2)} m</text>
-        {[...items].sort((a, b) => (a.id === 'rug' ? 0 : 1) - (b.id === 'rug' ? 0 : 1)).map(item => {
+        {[...items].sort((a, b) => (isRug(a) ? 0 : 1) - (isRug(b) ? 0 : 1)).map(item => {
           const active = selectedId === item.uid;
           const bounds = footprint(item);
           return <g key={item.uid} data-furniture={item.id} data-rotation={item.rotation} role="button" tabIndex={0} aria-label={`${item.name}, ${item.rotation}도, 방향키로 이동`} aria-pressed={active}
@@ -140,7 +160,7 @@ export default function RoomPlan({ room, floorColor, items, selectedId, onSelect
               const delta = { ArrowLeft: [-5, 0], ArrowRight: [5, 0], ArrowUp: [0, -5], ArrowDown: [0, 5] }[e.key];
               if (delta) { e.preventDefault(); onChange({ ...item, x: item.x + delta[0], y: item.y + delta[1] }); }
             }}>
-            <g transform={`rotate(${item.rotation}) translate(${-item.width / 2} ${-item.height / 2})`} filter={item.id === 'rug' ? undefined : 'url(#furniture-shadow)'}><FurnitureShape item={item} /></g>
+            <g transform={`rotate(${item.rotation}) translate(${-item.width / 2} ${-item.height / 2})`} filter={isRug(item) ? undefined : 'url(#furniture-shadow)'}><FurnitureShape item={item} /></g>
             {active && <rect data-selection="true" x={-bounds.width / 2 - 5} y={-bounds.height / 2 - 5} width={bounds.width + 10} height={bounds.height + 10} rx="5" fill="none" stroke="#20b8de" strokeWidth="2" strokeDasharray="6 4" pointerEvents="none" />}
           </g>;
         })}

@@ -9,9 +9,12 @@ create table if not exists public.furniture_counts (
 
 insert into public.furniture_counts (item_id, item_name) values
   ('bed', '침대'),
+  ('fabric_bed', '패브릭 침대'),
   ('desk', '책상'),
   ('sofa', '1인용 소파'),
+  ('beige_bean_bag', '베이지 빈백'),
   ('rug', '러그'),
+  ('white_round_rug', '흰색 원형 러그'),
   ('lamp', '조명'),
   ('plant', '화분'),
   ('dresser', '서랍장'),
@@ -90,7 +93,7 @@ begin
     raise exception using errcode = '42501', message = 'Administrator access required';
   end if;
 
-  update public.furniture_counts set total = 0;
+  update public.furniture_counts set total = 0 where true;
 end;
 $$;
 
