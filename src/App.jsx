@@ -289,7 +289,7 @@ function RoomApp() {
               </div>
             </section>
 
-            <footer className="intro-footer"><span aria-hidden="true">✦</span><p>당신의 작은 아이디어가 누군가의 새로운 시작이 될 수 있어요.</p><small>대국민 방꾸미기 프로젝트</small></footer>
+            <footer className="intro-footer"><span aria-hidden="true">✦</span><p>당신의 작은 아이디어가 누군가의 새로운 시작이 될 수 있어요.</p><small>#오늘의방 프로젝트</small></footer>
           </div>
         </div>
       )}
