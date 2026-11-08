@@ -25,14 +25,24 @@ alter table public.furniture_counts enable row level security;
 revoke all on table public.furniture_counts from anon, authenticated;
 grant select on table public.furniture_counts to authenticated;
 
+create or replace function public.is_furniture_admin()
+returns boolean
+language sql
+stable
+set search_path = ''
+as $$
+  select lower(coalesce((select auth.jwt() ->> 'email'), '')) = lower('ADMIN_EMAIL_HERE');
+$$;
+
+revoke all on function public.is_furniture_admin() from public, anon, authenticated;
+grant execute on function public.is_furniture_admin() to authenticated;
+
 drop policy if exists "Only the project admin can view furniture counts" on public.furniture_counts;
 create policy "Only the project admin can view furniture counts"
   on public.furniture_counts
   for select
   to authenticated
-  using (
-    lower(coalesce((select auth.jwt() ->> 'email'), '')) = lower('ADMIN_EMAIL_HERE')
-  );
+  using ((select public.is_furniture_admin()));
 
 create or replace function public.record_furniture_usage(p_counts jsonb)
 returns void
@@ -76,7 +86,7 @@ security definer
 set search_path = ''
 as $$
 begin
-  if lower(coalesce((select auth.jwt() ->> 'email'), '')) <> lower('ADMIN_EMAIL_HERE') then
+  if not public.is_furniture_admin() then
     raise exception using errcode = '42501', message = 'Administrator access required';
   end if;
 
