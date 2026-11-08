@@ -2,16 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { ArrowLeft, LoaderCircle, LockKeyhole, LogOut, RotateCcw } from 'lucide-react';
 import {
   ADMIN_EMAIL,
+  getPasswordSetupUser,
   isUsageStatsConfigured,
   loadFurnitureUsage,
   resetFurnitureUsage,
+  setPasswordFromAuthLink,
   signInAdmin,
   signOutAdmin,
 } from './lib/usageStats';
 
+function readAuthCallback() {
+  const params = new URLSearchParams(window.location.hash.slice(1));
+  const type = params.get('type');
+  const accessToken = params.get('access_token');
+  if (!accessToken || !['invite', 'recovery'].includes(type)) return null;
+  return { type, accessToken };
+}
+
 export default function AdminPage() {
   const [email, setEmail] = useState(ADMIN_EMAIL);
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [authCallback, setAuthCallback] = useState(readAuthCallback);
+  const [isVerifyingLink, setIsVerifyingLink] = useState(Boolean(authCallback));
   const [session, setSession] = useState(null);
   const [counts, setCounts] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -30,7 +43,29 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    if (isUsageStatsConfigured) refreshCounts();
+    if (!isUsageStatsConfigured) return;
+    if (!authCallback) {
+      refreshCounts();
+      return;
+    }
+
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.hash = '';
+    window.history.replaceState({}, document.title, `${cleanUrl.pathname}${cleanUrl.search}`);
+
+    let cancelled = false;
+    getPasswordSetupUser(authCallback.accessToken)
+      .then(user => {
+        if (!cancelled) setEmail(user.email);
+      })
+      .catch(err => {
+        if (!cancelled) setError(err.message || '초대 링크를 확인하지 못했습니다.');
+      })
+      .finally(() => {
+        if (!cancelled) setIsVerifyingLink(false);
+      });
+
+    return () => { cancelled = true; };
   }, []);
 
   const handleLogin = async (event) => {
@@ -48,6 +83,33 @@ export default function AdminPage() {
       await refreshCounts();
     } catch (err) {
       setError(err.message || '로그인에 실패했습니다.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleSetPassword = async (event) => {
+    event.preventDefault();
+    if (password.length < 8) {
+      setError('비밀번호를 8자 이상 입력해 주세요.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('비밀번호가 서로 다릅니다.');
+      return;
+    }
+
+    setBusy(true);
+    setError('');
+    setNotice('');
+    try {
+      await setPasswordFromAuthLink(authCallback.accessToken, password);
+      setPassword('');
+      setConfirmPassword('');
+      setAuthCallback(null);
+      setNotice('비밀번호 설정이 완료되었습니다. 관리자 페이지에서 로그인해 주세요.');
+    } catch (err) {
+      setError(err.message || '비밀번호를 설정하지 못했습니다. 초대 링크가 만료되었는지 확인해 주세요.');
     } finally {
       setBusy(false);
     }
@@ -112,7 +174,48 @@ export default function AdminPage() {
         {error && <div role="alert" className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>}
         {notice && <div role="status" className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700">{notice}</div>}
 
-        {!session ? (
+        {authCallback ? (
+          isVerifyingLink ? (
+            <div className="flex items-center justify-center gap-2 py-8 text-sm text-gray-500">
+              <LoaderCircle className="animate-spin" size={18} /> 초대 링크 확인 중...
+            </div>
+          ) : (
+            <form onSubmit={handleSetPassword} className="space-y-4">
+              <p className="text-sm leading-relaxed text-gray-500">
+                {authCallback.type === 'invite' ? '관리자 계정 초대를 수락합니다.' : '관리자 계정 비밀번호를 재설정합니다.'}
+                {email && <> 로그인 이메일: <b className="text-gray-700">{email}</b></>}
+              </p>
+              <label className="block text-sm font-medium">
+                새 비밀번호
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  className="mt-1.5 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none focus:border-[#35C5F0]"
+                />
+              </label>
+              <label className="block text-sm font-medium">
+                새 비밀번호 확인
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  className="mt-1.5 w-full rounded-lg border border-gray-300 px-3 py-2.5 outline-none focus:border-[#35C5F0]"
+                />
+              </label>
+              <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#35C5F0] px-4 py-3 font-bold text-white hover:bg-[#28AADC] disabled:opacity-60">
+                {busy ? <LoaderCircle className="animate-spin" size={18} /> : <LockKeyhole size={18} />}
+                비밀번호 설정
+              </button>
+            </form>
+          )
+        ) : !session ? (
           <form onSubmit={handleLogin} className="space-y-4">
             <p className="text-sm leading-relaxed text-gray-500">관리자 계정으로 로그인하면 공모전 응모에 사용된 가구 수를 확인할 수 있습니다.</p>
             <label className="block text-sm font-medium">

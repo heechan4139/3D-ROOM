@@ -34,7 +34,7 @@ QR 이미지가 `dist/website-qr.png`에 만들어집니다. 이 PNG를 발표 �
 ### 1. Supabase 프로젝트와 관리자 계정 만들기
 
 1. [Supabase](https://supabase.com/)에서 프로젝트를 만듭니다.
-2. Authentication의 Users 화면에서 관리자 이메일로 사용자를 추가하고 비밀번호를 설정합니다. 공개 회원가입은 비활성화해 두세요.
+2. Authentication의 URL Configuration에서 Site URL을 `https://heechan4139.github.io/3D-ROOM/`으로 설정하고, 같은 주소를 Redirect URLs에도 추가합니다. 초대 링크가 `localhost`로 돌아가지 않도록 하는 설정입니다.
 3. SQL Editor에서 `supabase/setup.sql`을 열고 `ADMIN_EMAIL_HERE` 두 곳을 관리자 이메일로 바꾼 뒤 전체 SQL을 실행합니다.
 
 ### 2. GitHub Pages에 연결하기
@@ -52,6 +52,7 @@ QR 이미지가 `dist/website-qr.png`에 만들어집니다. 이 PNG를 발표 �
 ### 3. 사용하기
 
 - 관리자 화면: `https://heechan4139.github.io/3D-ROOM/?admin=1`
+- 관리자 초대 또는 비밀번호 재설정 링크는 사이트로 돌아와 비밀번호 설정 화면을 엽니다.
 - 공개 사이트에서 사용자가 방 이미지를 저장하면 그 시점에 배치한 가구별 수가 집계됩니다. 여러 번 저장하면 저장할 때마다 집계됩니다.
 - 관리자 계정으로 로그인한 뒤 **전체 초기화**를 누르면 집계가 0으로 돌아갑니다.
 

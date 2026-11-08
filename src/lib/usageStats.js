@@ -37,6 +37,31 @@ async function authRequest(path, body) {
   return readResponse(response);
 }
 
+async function authUserRequest(accessToken, method = 'GET', body) {
+  const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    method,
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  });
+  return readResponse(response);
+}
+
+export async function getPasswordSetupUser(accessToken) {
+  const user = await authUserRequest(accessToken);
+  if (user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+    throw new Error('관리자 계정 초대 링크가 아닙니다.');
+  }
+  return user;
+}
+
+export async function setPasswordFromAuthLink(accessToken, password) {
+  await authUserRequest(accessToken, 'PUT', { password });
+}
+
 function storeSession(session) {
   const normalized = {
     access_token: session.access_token,

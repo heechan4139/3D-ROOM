@@ -10,7 +10,9 @@ import instagramFollowBase64 from './assets/instagram-follow.b64?raw';
 
 export default function App() {
   const isAdminPage = new URLSearchParams(window.location.search).get('admin') === '1';
-  return isAdminPage ? <AdminPage /> : <RoomApp />;
+  const authType = new URLSearchParams(window.location.hash.slice(1)).get('type');
+  const isPasswordSetup = authType === 'invite' || authType === 'recovery';
+  return isAdminPage || isPasswordSetup ? <AdminPage /> : <RoomApp />;
 }
 
 function RoomApp() {
