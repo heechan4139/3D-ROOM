@@ -26,3 +26,33 @@ pnpm run qr https://heechan4139.github.io/3D-ROOM/
 ```
 
 QR 이미지가 `dist/website-qr.png`에 만들어집니다. 이 PNG를 발표 자료나 인쇄물에 넣으면 QR 스캔으로 웹페이지에 접근할 수 있습니다.
+
+## 관리자 가구 통계 설정
+
+응모를 누른 순간 방에 배치된 가구 수를 공용 데이터베이스에 더하고, 관리자 로그인 화면에서만 통계를 조회하거나 초기화합니다. 통계 백엔드는 Supabase를 사용합니다. Supabase 연결 전에는 기존 프로토타입 화면 흐름만 동작하며 통계는 저장되지 않습니다.
+
+### 1. Supabase 프로젝트와 관리자 계정 만들기
+
+1. [Supabase](https://supabase.com/)에서 프로젝트를 만듭니다.
+2. Authentication의 Users 화면에서 관리자 이메일로 사용자를 추가하고 비밀번호를 설정합니다. 공개 회원가입은 비활성화해 두세요.
+3. SQL Editor에서 `supabase/setup.sql`을 열고 `ADMIN_EMAIL_HERE` 두 곳을 관리자 이메일로 바꾼 뒤 전체 SQL을 실행합니다.
+
+### 2. GitHub Pages에 연결하기
+
+저장소의 **Settings → Secrets and variables → Actions → New repository secret**에서 다음 세 항목을 추가합니다.
+
+| Secret 이름 | 값 |
+| --- | --- |
+| `VITE_SUPABASE_URL` | Supabase 프로젝트 URL |
+| `VITE_SUPABASE_ANON_KEY` | Supabase의 공개 `anon` 또는 `publishable` API key |
+| `VITE_ADMIN_EMAIL` | SQL에 입력한 관리자 이메일 |
+
+`service_role` 또는 `secret` API key는 웹사이트에 입력하지 마세요. 설정 후 **Actions → Deploy to GitHub Pages → Run workflow**를 실행하면 사이트가 다시 배포됩니다.
+
+### 3. 사용하기
+
+- 관리자 화면: `https://heechan4139.github.io/3D-ROOM/?admin=1`
+- 공개 사이트에서 사용자가 `응모`를 누르면 그 시점에 배치된 가구별 수가 1회 집계됩니다.
+- 관리자 계정으로 로그인한 뒤 **전체 초기화**를 누르면 집계가 0으로 돌아갑니다.
+
+현재 구현은 수업 발표용 프로토타입 통계입니다. 공개 응모 요청 자체는 서버에서 참가자나 중복 응모 여부를 검증하지 않습니다.

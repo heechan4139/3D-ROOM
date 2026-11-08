@@ -33,6 +33,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build website
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_ADMIN_EMAIL: ${{ secrets.VITE_ADMIN_EMAIL }}
         run: pnpm run build
       - name: Configure GitHub Pages
         id: pages

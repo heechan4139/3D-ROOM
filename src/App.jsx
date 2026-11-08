@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import AdminPage from './AdminPage';
+import { isUsageStatsConfigured, recordFurnitureUsage } from './lib/usageStats';
 import { 
   BedDouble, Armchair, Monitor, Lamp, Square, 
   ChevronLeft, Lock, Download, Quote, Check, Plus, Box, X, Table, Bed, Layers, ChevronRight
@@ -90,11 +92,31 @@ const DraggableItem = ({ item, onUpdatePosition, onDelete }) => {
 };
 
 export default function App() {
+  const isAdminPage = new URLSearchParams(window.location.search).get('admin') === '1';
+  return isAdminPage ? <AdminPage /> : <RoomApp />;
+}
+
+function RoomApp() {
   const [step, setStep] = useState('intro');
   const [roomSize, setRoomSize] = useState(7);
   const [viewMode, setViewMode] = useState('2d');
   const [placedItems, setPlacedItems] = useState([]);
   const [modalState, setModalState] = useState({ isOpen: false, type: '' });
+  const [submitError, setSubmitError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleContestSubmit = async () => {
+    setIsSubmitting(true);
+    setSubmitError('');
+    try {
+      if (isUsageStatsConfigured) await recordFurnitureUsage(placedItems);
+      setStep('success');
+    } catch (error) {
+      setSubmitError(error.message || '저장하지 못했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleAddToRoom = (catalogItem) => {
     if (catalogItem.isLocked) {
@@ -227,10 +249,11 @@ export default function App() {
               </div>
 
               <button 
-                onClick={() => setStep('success')}
-                className="text-white font-bold text-xs px-3 py-1.5 bg-[#35C5F0] rounded-lg shadow-sm hover:bg-[#28AADC] transition-colors"
+                onClick={handleContestSubmit}
+                disabled={isSubmitting}
+                className="text-white font-bold text-xs px-3 py-1.5 bg-[#35C5F0] rounded-lg shadow-sm hover:bg-[#28AADC] transition-colors disabled:opacity-60"
               >
-                응모
+                {isSubmitting ? '저장 중...' : '응모'}
               </button>
             </div>
 
@@ -249,6 +272,7 @@ export default function App() {
                 </button>
               ))}
             </div>
+            {submitError && <p role="alert" className="text-center text-[11px] font-medium text-red-600">{submitError}</p>}
           </header>
 
           <div className="flex-1 relative overflow-hidden flex items-center justify-center">
