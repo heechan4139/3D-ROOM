@@ -237,13 +237,13 @@ function RoomApp() {
                   <div className="intro-reward-icon showroom" aria-hidden="true">
                     <svg viewBox="0 0 64 64"><path d="m8 27 24-18 24 18M13 25v29h38V25M25 54V37h14v17"/><path d="M20 29h6m12 0h6M18 17l14-11 14 11"/><path className="window" d="M17 34h6v7h-6zm24 0h6v7h-6z"/></svg>
                   </div>
-                  <div><span className="intro-reward-index">AWARD 03</span><h3>북촌 쇼룸에서 만나는 작품</h3><p>수상 작품은 <b>오늘의집 북촌 쇼룸</b>에서 매달 소개될 예정입니다.</p></div>
+                  <div><span className="intro-reward-index">AWARD 03</span><h3>사연자에게 선물하는 나만의 인테리어 </h3><p>여러분들이 <b>직접 디자인 공간</b>이 사연자의 집으로 배달됩니다.</p></div>
                 </article>
                 <article className="intro-reward-card intro-reveal" style={{ '--intro-delay': '270ms' }}>
                   <div className="intro-reward-icon gift" aria-hidden="true">
                     <svg viewBox="0 0 64 64"><path d="M9 28h46v28H9zM6 20h52v10H6zM32 20v36"/><path d="M32 20c-2-11-17-16-19-7-2 8 12 9 19 7Zm0 0c2-11 17-16 19-7 2 8-12 9-19 7Z"/></svg>
                   </div>
-                  <div><span className="intro-reward-index">AWARD 04</span><h3>참여자 전원 쿠폰과 경품</h3><p>수상하지 못해도 참여만으로 할인 쿠폰과 기프티콘 등 선물을 드릴 예정이에요.</p></div>
+                  <div><span className="intro-reward-index">AWARD 04</span><h3>참여자 전원 포인트 지급</h3><p>수상하지 못해도 참여만으로 할인 쿠폰과 포인트 적립 등 선물을 드릴 예정이에요.</p></div>
                 </article>
               </div>
               <p className="intro-footnote intro-reveal">※ 시상 및 혜택의 세부 내용은 공모전 운영 상황에 따라 달라질 수 있습니다.</p>
