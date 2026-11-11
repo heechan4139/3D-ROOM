@@ -202,6 +202,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 .intro-follow-figure figcaption{padding-top:6px;color:#9aa3a9;font-size:9px}
 .intro-hashtags{display:flex;flex-wrap:wrap;gap:7px;margin:15px 0 0 41px}
 .intro-hashtags span{padding:7px 11px;border-radius:7px;background:#eaf8fc;color:#1699be;font-size:11px;font-weight:800}
+.hashtag-underlined{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 .intro-step-card>p.intro-tag-note{margin-top:10px;font-size:10px;color:#9aa3a9}
 .intro-tag-note b{color:#61717a}
 .intro-post-tip{display:flex;align-items:flex-start;gap:8px;margin:21px 0 0 41px;padding:11px 12px;border-radius:10px;background:#f5fafb;color:#65747c;font-size:10px;line-height:1.65}
@@ -339,6 +340,51 @@ button:focus-visible, a:focus-visible { outline: 2px solid #18abd3; outline-offs
 
   to {
     width: var(--score);
+  }
+}
+
+.intro-challenge-logo {
+  display: block;
+  width: min(100%, 680px);
+  height: auto;
+  margin: 17px auto 0;
+}
+
+.editor-header-topbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.editor-challenge-logo {
+  display: block;
+  width: clamp(92px, 20vw, 150px);
+  height: auto;
+  max-height: 44px;
+  object-fit: contain;
+}
+
+.editor-header-actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 6px;
+}
+
+@media (max-width: 520px) {
+  .editor-header-topbar {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 3px;
+  }
+
+  .editor-challenge-logo {
+    width: clamp(82px, 25vw, 120px);
+    max-height: 36px;
+  }
+
+  .editor-header-actions {
+    gap: 4px;
   }
 }
 
