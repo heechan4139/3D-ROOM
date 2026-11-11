@@ -290,7 +290,7 @@ function RoomApp() {
               </div>
             </section>
 
-            <footer className="intro-footer"><span aria-hidden="true">✦</span><p>당신의 작은 아이디어가 누군가의 새로운 시작이 될 수 있어요.</p><small>#오늘의방 프로젝트</small></footer>
+            <footer className="intro-footer"><span aria-hidden="true">✦</span><p>당신의 작은 아이디어가 누군가의 새로운 시작이 될 수 있어요.</p><small>#오방내방 프로젝트</small></footer>
           </div>
         </div>
       )}
@@ -595,7 +595,7 @@ function RoomApp() {
                     <h3 className="font-bold text-sm text-gray-900">해시태그와 함께 인스타그램 게시물 올리기</h3>
                     <p className="mt-1 text-xs leading-relaxed text-gray-600">완성한 공간과 사연을 인스타그램 게시물로 올리고 아래 해시태그를 달아 주세요.</p>
                     <div className="flex flex-wrap gap-2 mt-2">
-                      <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">#오늘의방챌린지</span>
+                      <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">#오방내방챌린지</span>
                       <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800">#오늘의집</span>
                     </div>
                     <p className="mt-2 text-[10px] leading-relaxed text-gray-500">해시태그를 모두 입력해야 자동으로 응모돼요.</p>
