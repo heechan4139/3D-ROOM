@@ -4,6 +4,7 @@ import RoomPlan, { FurnitureShape } from './RoomPlan';
 import { CATALOG_ITEMS, roomDimensions, constrainItem, defaultAppliances } from './roomGeometry';
 import { ChevronLeft, Lock, Download, Quote, Check, Plus, Box, ChevronRight, Home } from 'lucide-react';
 import { isUsageStatsConfigured, recordFurnitureUsage } from './lib/usageStats';
+import obangnaebangChallengeLogo from './assets/obangnaebang-challenge.png';
 
 import entryQuestionBase64 from './assets/entry-question.b64?raw';
 import instagramFollowImage from './assets/instagram-follow.png';
@@ -190,8 +191,8 @@ function RoomApp() {
             <div className="intro-hero-inner">
               <div className="intro-brand"><strong>오늘의집</strong><span>공모전</span></div>
               <p className="intro-kicker">YOUR ROOM, YOUR STORY</p>
-              <h1>#오늘의방챌린지<br /><em>프로젝트</em></h1>
-              <p className="intro-subtitle">당신의 센스로 누군가의 로망을 이뤄주세요!</p>
+              <img className="intro-challenge-logo" src={obangnaebangChallengeLogo} alt="오집내방챌린지" />
+              <p className="intro-subtitle">오늘의집이 만드는 내일의 방</p>
             </div>
           </section>
 
@@ -267,7 +268,7 @@ function RoomApp() {
                 <article className="intro-step-card intro-reveal" style={{ '--intro-delay': '100ms' }}>
                   <div className="intro-step-heading"><span>2</span><div><small>SHARE YOUR ROOM</small><h3>해시태그와 함께 게시물 올리기</h3></div></div>
                   <p>완성한 방과 사연을 인스타그램 게시물로 올리고, 아래 해시태그를 달아 주세요.</p>
-                  <div className="intro-hashtags"><span>#오늘의방챌린지</span><span>#오늘의집</span></div>
+                  <div className="intro-hashtags"><span>#오방내방챌린지</span><span>#오늘의집</span></div>
                   <p className="intro-tag-note">해시태그를 모두 입력해야 자동으로 응모돼요.</p>
                   <div className="intro-post-tip"><span aria-hidden="true">✦</span> 꾸미기 전후 사진과 공간에 담긴 이야기를 함께 올려 주세요.</div>
                 </article>
@@ -299,15 +300,16 @@ function RoomApp() {
         <div className="flex flex-col h-full animate-in slide-in-from-right duration-500 bg-[#f7f8fa]">
           
           <header className="flex flex-col px-4 py-3 bg-white border-b border-gray-200 z-30 shadow-sm gap-3">
-            <div className="flex items-center justify-between">
+            <div className="editor-header-topbar">
               <div className="flex items-center gap-1">
                 <button onClick={() => setStep('intro')} className="p-1 -ml-1 text-gray-600 hover:text-black">
                   <ChevronLeft size={24} />
                 </button>
                 <h1 className="font-bold text-gray-800 hidden sm:block text-sm">이전</h1>
               </div>
-
-              <div className="flex items-center gap-1.5">
+              
+              <img className="editor-challenge-logo" src={obangnaebangChallengeLogo} alt="오집내방챌린지" />
+              <div className="editor-header-actions">
                 <button
                   onClick={() => triggerAppModal('entry')}
                   className="flex items-center gap-1 text-[11px] font-bold text-amber-500 hover:text-amber-600 whitespace-nowrap"
